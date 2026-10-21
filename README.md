@@ -6,6 +6,7 @@
 - Quản lý nhiều ví, ghi thu, chi và chuyển ví
 - Số dư đầu tháng tự động chuyển từ tháng trước
 - Xem số dư dự kiến 3 tháng tới, chỉ tính từ dữ liệu đã nhập: giao dịch sắp tới, giao dịch định kỳ và nợ (không tự ước tính)
+- Đổi icon cho từng danh mục thu chi (bộ icon có sẵn hoặc tự nhập)
 - Chọn tháng nhanh bằng thanh cuộn ngang
 - Thẻ tổng quan: số dư, đầu tháng, thu, chi, chuyển; chạm vào Thu, Chi hoặc Chuyển để xem chi tiết theo danh mục và theo ngày
 - Danh sách giao dịch nhóm theo ngày, hiển thị tổng chi của từng ngày
@@ -44,4 +45,4 @@ npx cap open ios
 - Sao lưu định kỳ tại **Sao Lưu** > **Xuất File**; khôi phục bằng **Nhập File**.
 
 ## Cập nhật
-Khi thay đổi `index.html`, tăng tên cache trong `sw.js` (hiện là `sothuchi-v6`) để thiết bị tải bản mới.
+Khi thay đổi `index.html`, tăng tên cache trong `sw.js` (hiện là `sothuchi-v7`) để thiết bị tải bản mới.

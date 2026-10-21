@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Sổ Thu Chi">
+<meta name="apple-mobile-web-app-title" content="Money Flow">
 <meta name="theme-color" content="#e4ac28">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="manifest" href="manifest.webmanifest">
-<title>Sổ Thu Chi Của Bạn</title>
+<title>Money Flow: Sổ Thu Chi</title>
 <style>
 :root{--bg:#f6f7f9;--card:#fff;--tx:#1b1f24;--mut:#6b7280;--bd:#e5e7eb;--in:#16a34a;--out:#dc2626;--pri:#2563eb;
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -158,6 +158,8 @@ input[type=search]{-webkit-appearance:none}
 .tg input:checked~.sw::after{transform:translateX(18px)}
 .tg:has(input:checked){background:linear-gradient(135deg,#3b82f6,#1d4ed8);border-color:transparent;color:#fff;box-shadow:0 8px 20px rgba(37,99,235,.35)}
 .tg:has(input:checked) .ic{background:rgba(255,255,255,.22)}
+.sbar{height:6px;border-radius:3px;background:rgba(255,255,255,.35);overflow:hidden;margin-top:10px;display:none}.sbar i{display:block;height:100%;width:0;border-radius:3px;background:#fff;transition:width .4s}.sbar.hi i{background:#fecaca}.est{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.3);margin-left:6px;vertical-align:middle}
+.sum .row>div b{font-size:14px}
 .bfc{font-size:13px;margin-top:4px;color:rgba(74,54,8,.85);font-weight:600}
 .pcal{display:none;background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:12px;margin-bottom:8px;box-shadow:var(--sh)}
 .pcal.open{display:block}
@@ -196,14 +198,16 @@ button.av.on{border-color:var(--pri);background:rgba(212,160,23,.15)}
 <body>
 <main>
 <div id="warn" style="display:none;background:#fee2e2;color:#991b1b;padding:10px 12px;border-radius:12px;margin-bottom:10px;font-size:14px;font-weight:600"></div>
-<p class="hi" id="hi">Xin chào 👋</p><h1>Sổ Thu Chi Của Bạn</h1>
+<p class="hi" id="hi">Xin chào 👋</p><h1>Money Flow: Sổ Thu Chi</h1>
 <div class="mbar" id="mbar"><select id="month"></select></div>
 <div class="card sum">
   <div class="hd"><small id="bdl">Số Dư Hôm Nay</small><button class="eye" id="eye" type="button" title="Ẩn hoặc hiện số dư">👁️</button></div><div class="bal" id="bal">0 ₫</div><div class="bfc" id="bfc"></div>
   <div class="row" style="margin-top:10px">
-    <div><small>Tổng thu</small><b class="in" id="ti">0 ₫</b></div>
-    <div><small>Tổng chi</small><b class="out" id="to">0 ₫</b></div>
+    <div><small>Đầu tháng</small><b id="bop">0 ₫</b></div>
+    <div><small>Thu</small><b class="in" id="ti">0 ₫</b></div>
+    <div><small>Chi</small><b class="out" id="to">0 ₫</b></div>
   </div>
+  <div class="sbar" id="sbar"><i id="sfill"></i></div><div class="bfc" id="snote" style="margin-top:6px"></div>
 </div>
 <div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><p class="h2">Các ví</p><button class="lnk" id="wedit" type="button">✏️ Sửa</button></div><div id="wl"></div><div class="row" style="margin-top:10px"><input id="wn" type="text" placeholder="Tên ví mới"><input id="wi" type="text" inputmode="numeric" placeholder="Số dư ban đầu"></div><button class="add" id="wadd" type="button">Thêm ví</button></div>
 <div class="card">
@@ -325,11 +329,11 @@ $("cat").onchange=function(){fillSub()};
 function esc(s){return s.replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
 function render(){
   var months={};months[today().slice(0,7)]=1;data.forEach(function(x){months[x.d.slice(0,7)]=1});
-  (function(){var k=today().slice(0,7);for(var i=0;i<24;i++){months[k]=1;k=addMonth(k)}})();
+  (function(){var k=today().slice(0,7);for(var i=0;i<=EST_M;i++){months[k]=1;k=addMonth(k)}})();
   var cur=$("month").value||today().slice(0,7),keys=Object.keys(months).sort().reverse();
   $("month").innerHTML=keys.map(function(k){var p=k.split("-");return "<option value='"+k+"'"+(k==cur?" selected":"")+">Tháng "+p[1]+", "+p[0]+"</option>"}).join("");
   var ti=0,to=0,ms=cur+"-01";allTx(monEnd(cur)).forEach(function(x){if(x.debt||x.d<ms)return;if(x.t=="i")ti+=x.a;else if(x.t=="o")to+=x.a});
-  $("ti").textContent=vnd(ti);$("to").textContent=vnd(to);renderWallets();
+  MT={i:ti,o:to};renderWallets();
   var list=data.filter(function(x){return passF(x,cur)}).sort(function(a,b){return b.d.localeCompare(a.d)||b.id-a.id});
   $("list").innerHTML=list.length?list.map(function(x){
     var p=x.d.split("-");
@@ -747,6 +751,7 @@ $("csv").onclick=async function(){
   try{await dl.save({filename:"so-thu-chi-"+today()+".csv",data:new Blob([txt],{type:"text/csv"})});msg("Đã xuất file Excel (CSV).")}
   catch(e){msg(e&&e.code=="declined"?"Bạn đã hủy lưu file.":"Không lưu được file, thử lại sau.")}
 };
+var EST_M=3,MT={i:0,o:0};
 function allTx(upto){
   var l=data.filter(function(x){return x.d<=upto}),t=today();
   REC.forEach(function(r){
@@ -768,20 +773,17 @@ function allTx(upto){
 function eomS(){var t=today();return t.slice(0,8)+pad(new Date(+t.slice(0,4),+t.slice(5,7),0).getDate())}
 function fcSmall(w){if(!isCurM())return "";var b=wbal(w),f=wbal(w,eomS());return f!=b?"<small>Dự kiến hết tháng: "+mv(f)+"</small>":""}
 function updBal(){
-  var cur=$("month").value||today().slice(0,7),tk=today().slice(0,7),tot=0,fo=0,open=0,e=eomS(),pe=monEnd(prevMonth(cur));
-  wallets.forEach(function(w){open+=wbal(w,pe)});
-  if(cur==tk){
-    wallets.forEach(function(w){tot+=wbal(w);fo+=wbal(w,e)});
-    $("bal").textContent=mv(tot);$("bdl").textContent="Số Dư Hôm Nay · "+fshort(today());
-    var d=fo-tot;
-    $("bfc").innerHTML=(d?"📅 Dự kiến hết tháng: "+mv(fo)+(hideBal?"":" ("+(d>0?"+":"−")+vnd(Math.abs(d))+")"):"")+"<br>⏮ Đầu tháng (từ tháng trước chuyển sang): "+mv(open);
-  }else{
-    var me=monEnd(cur);wallets.forEach(function(w){fo+=wbal(w,me)});
-    var fut=cur>tk,p=cur.split("-");
-    $("bal").textContent=mv(fo);
-    $("bdl").textContent=(fut?"Số Dư Dự Kiến Cuối Tháng ":"Số Dư Cuối Tháng ")+p[1]+"/"+p[0];
-    $("bfc").innerHTML="⏮ Đầu tháng (từ tháng trước chuyển sang): "+mv(open);
-  }
+  var cur=$("month").value||today().slice(0,7),tk=today().slice(0,7),pe=monEnd(prevMonth(cur)),open=0,end=0,fo=0,e=eomS(),fut=cur>tk,p=cur.split("-");
+  wallets.forEach(function(w){open+=wbal(w,pe);end+=wbal(w,refDate());fo+=wbal(w,e)});
+  $("bal").textContent=mv(end);
+  $("bdl").innerHTML=(cur==tk?"Số Dư Hôm Nay · "+fshort(today()):fut?"Dự Kiến Cuối Tháng "+p[1]+"/"+p[0]:"Số Dư Cuối Tháng "+p[1]+"/"+p[0]);
+  $("bop").textContent=mv(open);$("ti").textContent=vnd(MT.i);$("to").textContent=vnd(MT.o);
+  var d=fo-end;
+  $("bfc").textContent=cur==tk&&d?"📅 Dự kiến hết tháng: "+mv(fo)+(hideBal?"":" ("+(d>0?"+":"−")+vnd(Math.abs(d))+")"):"";
+  var bar=$("sbar");
+  if(MT.i>0){var pc=Math.round(MT.o/MT.i*100);bar.style.display="block";bar.classList.toggle("hi",pc>=100);$("sfill").style.width=Math.min(pc,100)+"%";
+    $("snote").textContent="Đã chi "+pc+"% thu nhập"}
+  else{bar.style.display="none";$("snote").textContent=fut?"Chỉ gồm khoản đã nhập: giao dịch sắp tới, định kỳ và nợ":""}
 }
 function renderBalChart(){
   var t=today(),base=new Date(+t.slice(0,4),+t.slice(5,7)-1,+t.slice(8)),init=0,days=[];

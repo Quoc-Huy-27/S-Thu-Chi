@@ -1,11 +1,12 @@
-# Sổ Thu Chi
+# Money Flow: Sổ Thu Chi
 
 Ứng dụng quản lý thu chi cá nhân dạng PWA, chạy offline và cài được lên iPhone.
 
 ## Tính năng
 - Quản lý nhiều ví, ghi thu, chi và chuyển ví
 - Số dư đầu tháng tự động chuyển từ tháng trước
-- Xem số dư dự kiến của các tháng tương lai (gồm khoản sắp tới, định kỳ và nợ)
+- Xem số dư dự kiến 3 tháng tới, chỉ tính từ dữ liệu đã nhập: giao dịch sắp tới, giao dịch định kỳ và nợ (không tự ước tính)
+- Thẻ tổng quan: số dư, đầu tháng, thu, chi và thanh tiến độ chi tiêu
 - Giao dịch định kỳ, ngân sách, mục tiêu tiết kiệm, theo dõi nợ
 - Biểu đồ thu chi và diễn biến số dư
 - Sao lưu, khôi phục và xuất CSV
@@ -25,7 +26,7 @@
 mkdir sothuchi && cd sothuchi
 npm init -y
 npm i @capacitor/core @capacitor/cli @capacitor/ios
-npx cap init "Sổ Thu Chi" com.tenban.sothuchi --web-dir=www
+npx cap init "Money Flow" com.tenban.sothuchi --web-dir=www
 mkdir www   # chép toàn bộ file của gói vào www
 npx cap add ios
 npx cap sync
@@ -41,4 +42,4 @@ npx cap open ios
 - Sao lưu định kỳ tại **Sao Lưu** > **Xuất File**; khôi phục bằng **Nhập File**.
 
 ## Cập nhật
-Khi thay đổi `index.html`, tăng tên cache trong `sw.js` (hiện là `sothuchi-v2`) để thiết bị tải bản mới.
+Khi thay đổi `index.html`, tăng tên cache trong `sw.js` (hiện là `sothuchi-v5`) để thiết bị tải bản mới.

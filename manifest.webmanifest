@@ -1,6 +1,6 @@
 {
-  "name": "Sổ Thu Chi Của Bạn",
-  "short_name": "Sổ Thu Chi",
+  "name": "Money Flow: Sổ Thu Chi",
+  "short_name": "Money Flow",
   "start_url": ".",
   "scope": ".",
   "display": "standalone",

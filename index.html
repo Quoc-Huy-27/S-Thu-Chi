@@ -289,7 +289,9 @@ button.av.on{border-color:var(--pri);background:rgba(212,160,23,.15)}
   <p class="leg">Cho vay trừ tiền khỏi ví, đi vay cộng tiền vào ví. Bấm ✓ khi đã trả thì tiền được hoàn lại tương ứng. Chạm vào một khoản để sửa. Các khoản này không tính vào tổng thu, tổng chi.</p></div>
 <div class="card"><div class="hd"><p class="h2">Mục Tiêu Tiết Kiệm</p><button class="lnk edt" type="button">✏️ Sửa</button></div><div id="gl"></div>
   <div class="row" style="margin-top:10px"><input id="gname" type="text" placeholder="Tên mục tiêu"><input id="gtarget" type="text" inputmode="numeric" placeholder="Số tiền cần (₫)"></div>
-  <button class="add" id="gadd" type="button">Thêm Mục Tiêu</button></div>
+  <button class="add" id="gadd" type="button">Thêm Mục Tiêu</button>
+  <p class="leg" id="gmsg" style="color:var(--out);font-weight:600;margin:8px 0 0"></p>
+  <p class="leg">Chọn ví ở trên rồi bấm Góp: tiền được trừ khỏi ví đó. Bấm Rút: tiền cộng lại vào ví. Các khoản này không tính vào tổng thu, tổng chi. Xóa một lần góp hoặc xóa mục tiêu sẽ hoàn tiền về ví.</p></div>
 <div class="card"><p class="h2">Hồ Sơ</p>
   <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
     <div id="pav" style="width:64px;height:64px;border-radius:50%;background:rgba(212,160,23,.18);display:grid;place-items:center;font-size:34px;flex:none">🐷</div>
@@ -507,7 +509,7 @@ function renderWallets(){
   if(s2)$("wal2").value=s2;else if(wallets[1])$("wal2").value=wallets[1].id;
   var tot=0;
   $("wl").innerHTML=wallets.map(function(w){var b=wbal(w,refDate());tot+=b;
-    var used=data.some(function(x){return x.w==w.id||x.w2==w.id})||DEBT.some(function(d){return d.w==w.id});
+    var used=data.some(function(x){return x.w==w.id||x.w2==w.id})||DEBT.some(function(d){return d.w==w.id})||GOAL.some(function(g){return (g.hist||[]).some(function(h){return h.w==w.id})});
     if(wedit)return "<div class='cmr'><button class='x cic' data-wic='"+w.id+"' type='button'>"+wic(w)+"</button><input data-wn='"+w.id+"' placeholder='Tên ví' value=\""+esc(w.n)+"\"><input data-wi='"+w.id+"' inputmode='numeric' placeholder='Số dư ban đầu' value=\""+w.init.toLocaleString("vi-VN")+"\" style='max-width:130px'>"+(used||wallets.length<2?"<span style='width:42px;flex:none'></span>":"<button class='x' data-w='"+w.id+"' type='button'>✕</button>")+"</div>"+wpk(w);
     return "<div class='item' data-ic='"+wic(w)+"'><div class='m'><b>"+esc(w.n)+"</b>"+fcSmall(w)+"</div><b class='"+(b<0?"out":"")+"'>"+mv(b)+"</b>"+(used||wallets.length<2?"":"<button class='x' data-w='"+w.id+"' type='button'>✕</button>")+"</div>"}).join("");
   updBal();
@@ -869,25 +871,44 @@ $("dadd").onclick=function(){
   else{o.id=nid();o.paid=false;DEBT.push(o)}
   endDebtEdit();clearDebtForm();saveX();render();
 };
+var gWal=0,gTimer=0;
+function gMsg(t){var e=$("gmsg");e.textContent=t;clearTimeout(gTimer);gTimer=setTimeout(function(){e.textContent=""},4500)}
 function renderGoal(){
-  $("gl").innerHTML=GOAL.length?GOAL.map(function(g){
+  if(!byId(wallets,gWal))gWal=wallets[0]?wallets[0].id:0;
+  var opts=wallets.map(function(w){return "<option value='"+w.id+"'"+(String(w.id)==String(gWal)?" selected":"")+">"+wic(w)+" "+esc(w.n)+" · "+mv(wbal(w))+"</option>"}).join("");
+  var tot=0;GOAL.forEach(function(g){tot+=g.saved});
+  $("gl").innerHTML=GOAL.length?"<div class='leg' style='margin:0 0 6px'>Tổng đã tiết kiệm: <b>"+vnd(tot)+"</b></div><div class='leg' style='margin:0 0 4px'>Góp từ ví / rút về ví:</div><select id='gw' style='margin-bottom:12px'>"+opts+"</select>"+GOAL.map(function(g){
     var p=Math.min(100,Math.round(g.saved/g.target*100));
-    return "<div class='cr'><div class='t'><span>🎯 "+esc(g.n)+" · "+p+"%"+(g.saved>=g.target?" 🎉":"")+"</span><button data-gd='"+g.id+"' type='button' style='width:auto;margin:0;padding:0 6px;background:none;border:0;color:var(--mut)'>✕</button></div><div class='bar'><b style='width:"+p+"%'></b></div><div class='leg' style='margin:3px 0 6px'>"+vnd(g.saved)+" / "+vnd(g.target)+"</div><div class='row'><input data-gi='"+g.id+"' inputmode='numeric' placeholder='Số tiền' style='margin:0'><button class='add' data-gc='"+g.id+"' data-s='1' type='button' style='padding:8px'>Góp</button><button class='add alt' data-gc='"+g.id+"' data-s='-1' type='button' style='padding:8px'>Rút</button></div></div>"}).join(""):"<div class='empty'>Chưa có mục tiêu nào</div>";
+    var hs=(g.hist||[]).slice().sort(function(x,y){return y.d.localeCompare(x.d)||y.id-x.id}).slice(0,3).map(function(h){
+      return "<div class='leg' style='margin:2px 0;display:flex;align-items:center;gap:6px'><span style='flex:1'>"+(h.a>0?"➕ Góp ":"➖ Rút ")+vnd(Math.abs(h.a))+" · "+h.d.slice(8)+"/"+h.d.slice(5,7)+" · "+(h.a>0?"từ ":"về ")+wnI(h.w)+"</span><button data-gh='"+g.id+"|"+h.id+"' type='button' style='width:auto;margin:0;padding:0 6px;background:none;border:0;color:var(--mut)'>✕</button></div>"}).join("");
+    return "<div class='cr'><div class='t'><span>🎯 "+esc(g.n)+" · "+p+"%"+(g.saved>=g.target?" 🎉":"")+"</span><button data-gd='"+g.id+"' type='button' style='width:auto;margin:0;padding:0 6px;background:none;border:0;color:var(--mut)'>✕</button></div><div class='bar'><b style='width:"+p+"%'></b></div><div class='leg' style='margin:3px 0 6px'>"+vnd(g.saved)+" / "+vnd(g.target)+"</div><div class='row'><input data-gi='"+g.id+"' inputmode='numeric' placeholder='Số tiền' style='margin:0'><button class='add' data-gc='"+g.id+"' data-s='1' type='button' style='padding:8px'>Góp</button><button class='add alt' data-gc='"+g.id+"' data-s='-1' type='button' style='padding:8px'>Rút</button></div>"+hs+"</div>"}).join(""):"<div class='empty'>Chưa có mục tiêu nào</div>";
 }
 $("gl").oninput=function(e){if(e.target.getAttribute("data-gi")!==null)fmtIn(e.target)};
+$("gl").onchange=function(e){if(e.target.id=="gw")gWal=e.target.value};
 $("gl").onclick=function(e){
   var b=e.target.closest("button");if(!b)return;
-  var d=b.getAttribute("data-gd"),c=b.getAttribute("data-gc");
-  if(d){GOAL=rmId(GOAL,d)}
-  else if(c){var inp=$("gl").querySelector("input[data-gi='"+c+"']"),a=num(inp.value),g=byId(GOAL,c);if(!a||!g)return;g.saved=Math.max(0,g.saved+(+b.getAttribute("data-s"))*a)}
+  var d=b.getAttribute("data-gd"),c=b.getAttribute("data-gc"),gh=b.getAttribute("data-gh");
+  if(d){
+    var g0=byId(GOAL,d);if(!g0)return;
+    if(g0.hist&&g0.hist.length&&!confirm("Xóa mục tiêu \""+g0.n+"\"? Số tiền đã góp từ ví sẽ được hoàn lại vào các ví."))return;
+    GOAL=rmId(GOAL,d)}
+  else if(gh){var q=gh.split("|"),g1=byId(GOAL,q[0]);if(!g1)return;var h1=byId(g1.hist||[],q[1]);if(!h1)return;
+    g1.saved=Math.max(0,g1.saved-h1.a);g1.hist=rmId(g1.hist,q[1])}
+  else if(c){
+    var inp=$("gl").querySelector("input[data-gi='"+c+"']"),a=num(inp.value),g=byId(GOAL,c),w=byId(wallets,gWal),sg=+b.getAttribute("data-s");
+    if(!g||!w)return;if(!a){inp.focus();return}
+    if(sg>0&&a>wbal(w)){gMsg("Ví "+w.n+" không đủ số dư (còn "+vnd(wbal(w))+").");return}
+    if(sg<0&&a>g.saved){gMsg("Chỉ rút tối đa "+vnd(g.saved)+" từ mục tiêu này.");return}
+    g.hist=g.hist||[];g.hist.push({id:nid(),d:today(),a:sg*a,w:w.id});g.saved=Math.max(0,g.saved+sg*a);
+  }
   else return;
-  saveX();renderGoal();
+  saveX();render();
 };
 $("gtarget").oninput=function(){fmtIn(this)};
 $("gadd").onclick=function(){
   var n=$("gname").value.trim(),t=num($("gtarget").value);
   if(!n){$("gname").focus();return}if(!t){$("gtarget").focus();return}
-  GOAL.push({id:nid(),n:n,target:t,saved:0});$("gname").value="";$("gtarget").value="";saveX();renderGoal();
+  GOAL.push({id:nid(),n:n,target:t,saved:0,hist:[]});$("gname").value="";$("gtarget").value="";saveX();renderGoal();
 };
 function renderExtras(){
   var sw=$("fw").value,sc=$("fc").value,cur=$("month").value||today().slice(0,7);
@@ -925,6 +946,7 @@ function allTx(upto){
       k=addMonth(k);
     }
   });
+  GOAL.forEach(function(g){(g.hist||[]).forEach(function(h){if(h.w&&h.d<=upto)l.push({t:h.a>0?"o":"i",w:h.w,a:Math.abs(h.a),d:h.d,v:1,debt:1,sav:1})})});
   DEBT.forEach(function(d){
     if(!d.w)return;
     if(d.d0<=upto)l.push({t:d.k=="cho"?"o":"i",w:d.w,a:d.a,d:d.d0,v:1,debt:1});

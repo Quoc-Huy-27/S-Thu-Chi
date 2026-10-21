@@ -10,7 +10,8 @@
 - Chọn tháng nhanh bằng thanh cuộn ngang
 - Thẻ tổng quan: số dư, đầu tháng, thu, chi, chuyển; chạm vào Thu, Chi hoặc Chuyển để xem chi tiết theo danh mục và theo ngày
 - Danh sách giao dịch nhóm theo ngày, hiển thị tổng chi của từng ngày
-- Giao dịch định kỳ, ngân sách, mục tiêu tiết kiệm, theo dõi nợ
+- Giao dịch định kỳ, ngân sách, theo dõi nợ
+- Mục tiêu tiết kiệm: chọn ví để góp (trừ tiền khỏi ví) hoặc rút (cộng lại vào ví), có lịch sử từng lần góp
 - Biểu đồ thu chi và diễn biến số dư
 - Biểu đồ phân tích chi tiêu: tỷ trọng theo danh mục, chi từng ngày, chi theo thứ trong tuần, so với tháng trước, 5 khoản chi lớn nhất
 - Sao lưu, khôi phục và xuất CSV
@@ -46,4 +47,4 @@ npx cap open ios
 - Sao lưu định kỳ tại **Sao Lưu** > **Xuất File**; khôi phục bằng **Nhập File**.
 
 ## Cập nhật
-Khi thay đổi `index.html`, tăng tên cache trong `sw.js` (hiện là `sothuchi-v10`) để thiết bị tải bản mới.
+Khi thay đổi `index.html`, tăng tên cache trong `sw.js` (hiện là `sothuchi-v11`) để thiết bị tải bản mới.

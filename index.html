@@ -571,7 +571,8 @@ function renderBud(){
   Object.keys(BUD).forEach(function(k){if(keys.indexOf(k)<0)keys.push(k)});
   if(bedit){
     $("bl").innerHTML=keys.map(function(k){
-      return "<div class='cmr'><span style='flex:1'>"+(k=="*"?"Tổng Chi Cả Tháng":esc(k))+"</span><input data-bk=\""+esc(k)+"\" inputmode='numeric' placeholder='Chưa đặt' value=\""+(BUD[k]?BUD[k].toLocaleString("vi-VN"):"")+"\" style='max-width:150px'></div>"}).join("");
+      return "<div class='cmr'><span style='flex:1'>"+(k=="*"?"Tổng Chi Cả Tháng":esc(k))+"</span><input data-bk=\""+esc(k)+"\" inputmode='numeric' placeholder='Chưa đặt' value=\""+(BUD[k]?BUD[k].toLocaleString("vi-VN"):"")+"\" style='max-width:150px'></div>"}).join("")+"<div class='leg' id='bsum' style='margin:8px 0 0'></div>";
+    updBsum();
     return;
   }
   var rows=keys.filter(function(k){return BUD[k]>0}).map(function(k){
@@ -579,9 +580,37 @@ function renderBud(){
     return "<div class='cr'><div class='t'><span>"+(k=="*"?"Tổng Chi":esc(k))+" · "+p+"%</span><b>"+vnd(s)+" / "+vnd(lim)+"</b></div><div class='bar'><b style='width:"+Math.min(p,100)+"%;background:"+col+"'></b></div><div class='leg' style='margin:2px 0 0;"+(s>lim?"color:var(--out)":"")+"'>"+(s>lim?"Vượt "+vnd(s-lim):"Còn "+vnd(lim-s))+"</div></div>"});
   $("bl").innerHTML=rows.length?rows.join(""):"<div class='empty'>Chưa đặt hạn mức. Bấm Sửa để đặt.</div>";
 }
-$("bedit").onclick=function(){bedit=!bedit;this.textContent=bedit?"✔ Xong":"✏️ Sửa";renderBud()};
-$("bl").oninput=function(e){if(e.target.getAttribute("data-bk")!==null)fmtIn(e.target)};
-$("bl").onchange=function(e){var k=e.target.getAttribute("data-bk");if(k===null)return;var n=num(e.target.value);if(n>0)BUD[k]=n;else delete BUD[k];saveX()};
+var budNote="";
+function budSum(){var t=0;Object.keys(BUD).forEach(function(k){if(k!="*")t+=BUD[k]||0});return t}
+function updBsum(){
+  var e=$("bsum");if(!e)return;
+  var sm=budSum(),t=BUD["*"]||0;
+  e.style.color=t&&sm>t?"var(--out)":"";e.style.whiteSpace="pre-line";
+  e.textContent=(budNote?"ℹ️ "+budNote+"\n":"")+"Tổng các khoản riêng lẻ: "+vnd(sm)+(t?" · Tổng hạn mức: "+vnd(t):"")+(t&&sm>t?" ⚠️ Tổng hạn mức phải lớn hơn hoặc bằng tổng các khoản.":"")
+}
+function budSet(k,n){if(n>0)BUD[k]=n;else delete BUD[k]}
+function budFix(k,inp){
+  var t=BUD["*"]||0,sm=budSum();
+  if(!t||sm<=t)return;
+  if(k=="*"){BUD["*"]=sm;if(inp)inp.value=sm.toLocaleString("vi-VN");budNote=("Tổng hạn mức không được nhỏ hơn tổng các khoản riêng lẻ, đã nâng lên "+vnd(sm)+".")}
+  else{
+    var mx=Math.max(0,t-(sm-(BUD[k]||0)));
+    budSet(k,mx);if(inp)inp.value=mx?mx.toLocaleString("vi-VN"):"";
+    budNote=("Tổng các khoản không được vượt tổng hạn mức ("+vnd(t)+"). "+(mx?"Đã giảm khoản này xuống "+vnd(mx)+".":"Hãy tăng tổng hạn mức trước."))
+  }
+}
+$("bedit").onclick=function(){
+  budNote="";if(bedit){var a=document.activeElement;if(a&&a.blur)a.blur();budFix("*",null)}
+  bedit=!bedit;this.textContent=bedit?"✔ Xong":"✏️ Sửa";renderBud();saveX()
+};
+$("bl").oninput=function(e){
+  var k=e.target.getAttribute("data-bk");if(k===null)return;
+  fmtIn(e.target);budSet(k,num(e.target.value));saveX();updBsum()
+};
+$("bl").onchange=function(e){
+  var k=e.target.getAttribute("data-bk");if(k===null)return;
+  budNote="";budSet(k,num(e.target.value));budFix(k,e.target);saveX();updBsum()
+};
 function renderDebt(){
   var sv=$("dwal").value;
   $("dwal").innerHTML=wallets.map(function(w){return "<option value='"+w.id+"'>"+esc(w.n)+"</option>"}).join("");

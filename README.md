@@ -1,0 +1,44 @@
+# Sổ Thu Chi
+
+Ứng dụng quản lý thu chi cá nhân dạng PWA, chạy offline và cài được lên iPhone.
+
+## Tính năng
+- Quản lý nhiều ví, ghi thu, chi và chuyển ví
+- Số dư đầu tháng tự động chuyển từ tháng trước
+- Xem số dư dự kiến của các tháng tương lai (gồm khoản sắp tới, định kỳ và nợ)
+- Giao dịch định kỳ, ngân sách, mục tiêu tiết kiệm, theo dõi nợ
+- Biểu đồ thu chi và diễn biến số dư
+- Sao lưu, khôi phục và xuất CSV
+
+## Nội dung gói
+`index.html` (ứng dụng), `sw.js` (chạy offline), `manifest.webmanifest`, `icon-192.png`, `icon-512.png`, `apple-touch-icon.png`
+
+## Cài đặt
+
+### Cách 1: Cài qua Safari (không cần Mac)
+1. Đưa toàn bộ file trong thư mục lên một dịch vụ host tĩnh có HTTPS (Netlify Drop, GitHub Pages hoặc Cloudflare Pages).
+2. Mở đường dẫn bằng **Safari** trên iPhone.
+3. Chọn **Chia sẻ** > **Thêm vào Màn hình chính**.
+
+### Cách 2: Đóng gói app iOS (cần Mac và Xcode)
+```
+mkdir sothuchi && cd sothuchi
+npm init -y
+npm i @capacitor/core @capacitor/cli @capacitor/ios
+npx cap init "Sổ Thu Chi" com.tenban.sothuchi --web-dir=www
+mkdir www   # chép toàn bộ file của gói vào www
+npx cap add ios
+npx cap sync
+npx cap open ios
+```
+- Apple ID miễn phí: app hết hạn sau 7 ngày, cần cài lại.
+- Phát hành TestFlight hoặc App Store: cần tài khoản Apple Developer (99 USD/năm).
+- Biểu tượng app: thay `icon-512.png` trong Xcode (Assets > AppIcon).
+
+## Dữ liệu
+- Dữ liệu lưu cục bộ trên thiết bị, không có tài khoản hay đồng bộ giữa các máy.
+- Safari và app trên Màn hình chính lưu dữ liệu tách biệt, nên chọn một cách và dùng cố định.
+- Sao lưu định kỳ tại **Sao Lưu** > **Xuất File**; khôi phục bằng **Nhập File**.
+
+## Cập nhật
+Khi thay đổi `index.html`, tăng tên cache trong `sw.js` (hiện là `sothuchi-v2`) để thiết bị tải bản mới.

@@ -325,9 +325,10 @@ $("cat").onchange=function(){fillSub()};
 function esc(s){return s.replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
 function render(){
   var months={};months[today().slice(0,7)]=1;data.forEach(function(x){months[x.d.slice(0,7)]=1});
+  (function(){var k=today().slice(0,7);for(var i=0;i<24;i++){months[k]=1;k=addMonth(k)}})();
   var cur=$("month").value||today().slice(0,7),keys=Object.keys(months).sort().reverse();
   $("month").innerHTML=keys.map(function(k){var p=k.split("-");return "<option value='"+k+"'"+(k==cur?" selected":"")+">Tháng "+p[1]+", "+p[0]+"</option>"}).join("");
-  var ti=0,to=0;data.forEach(function(x){if(x.d>today())return;if(x.t=="i")ti+=x.a;else if(x.t=="o")to+=x.a});
+  var ti=0,to=0,ms=cur+"-01";allTx(monEnd(cur)).forEach(function(x){if(x.debt||x.d<ms)return;if(x.t=="i")ti+=x.a;else if(x.t=="o")to+=x.a});
   $("ti").textContent=vnd(ti);$("to").textContent=vnd(to);renderWallets();
   var list=data.filter(function(x){return passF(x,cur)}).sort(function(a,b){return b.d.localeCompare(a.d)||b.id-a.id});
   $("list").innerHTML=list.length?list.map(function(x){
@@ -363,6 +364,9 @@ function subRows(m,total){
 }
 var wallets=[];
 function wname(id){for(var i=0;i<wallets.length;i++)if(wallets[i].id==id)return wallets[i].n;return "?"}
+function monEnd(k){return k+"-"+pad(new Date(+k.slice(0,4),+k.slice(5,7),0).getDate())}
+function isCurM(){return ($("month").value||today().slice(0,7))==today().slice(0,7)}
+function refDate(){var k=$("month").value||today().slice(0,7);return k==today().slice(0,7)?today():monEnd(k)}
 function wbal(w,up){var b=w.init;allTx(up||today()).forEach(function(x){if(x.t=="t"){if(x.w==w.id)b-=x.a;if(x.w2==w.id)b+=x.a}else if(x.w==w.id)b+=x.t=="i"?x.a:-x.a});return b}
 function renderWallets(){
   var sel=$("wal").value;
@@ -372,7 +376,7 @@ function renderWallets(){
   $("wal2").innerHTML=wallets.map(function(w){return "<option value='"+w.id+"'>→ "+esc(w.n)+"</option>"}).join("");
   if(s2)$("wal2").value=s2;else if(wallets[1])$("wal2").value=wallets[1].id;
   var tot=0;
-  $("wl").innerHTML=wallets.map(function(w){var b=wbal(w);tot+=b;
+  $("wl").innerHTML=wallets.map(function(w){var b=wbal(w,refDate());tot+=b;
     var used=data.some(function(x){return x.w==w.id||x.w2==w.id})||DEBT.some(function(d){return d.w==w.id});
     if(wedit)return "<div class='cmr'><input data-wn='"+w.id+"' placeholder='Tên ví' value=\""+esc(w.n)+"\"><input data-wi='"+w.id+"' inputmode='numeric' placeholder='Số dư ban đầu' value=\""+w.init.toLocaleString("vi-VN")+"\" style='max-width:130px'>"+(used||wallets.length<2?"<span style='width:42px;flex:none'></span>":"<button class='x' data-w='"+w.id+"' type='button'>✕</button>")+"</div>";
     return "<div class='item'><div class='m'><b>"+esc(w.n)+"</b>"+fcSmall(w)+"</div><b class='"+(b<0?"out":"")+"'>"+mv(b)+"</b>"+(used||wallets.length<2?"":"<button class='x' data-w='"+w.id+"' type='button'>✕</button>")+"</div>"}).join("");
@@ -762,13 +766,22 @@ function allTx(upto){
   return l;
 }
 function eomS(){var t=today();return t.slice(0,8)+pad(new Date(+t.slice(0,4),+t.slice(5,7),0).getDate())}
-function fcSmall(w){var b=wbal(w),f=wbal(w,eomS());return f!=b?"<small>Dự kiến hết tháng: "+mv(f)+"</small>":""}
+function fcSmall(w){if(!isCurM())return "";var b=wbal(w),f=wbal(w,eomS());return f!=b?"<small>Dự kiến hết tháng: "+mv(f)+"</small>":""}
 function updBal(){
-  var tot=0,fo=0,e=eomS();
-  wallets.forEach(function(w){tot+=wbal(w);fo+=wbal(w,e)});
-  $("bal").textContent=mv(tot);$("bdl").textContent="Số Dư Hôm Nay · "+fshort(today());
-  var d=fo-tot;
-  $("bfc").textContent=d?"📅 Dự kiến hết tháng: "+mv(fo)+(hideBal?"":" ("+(d>0?"+":"−")+vnd(Math.abs(d))+")"):"";
+  var cur=$("month").value||today().slice(0,7),tk=today().slice(0,7),tot=0,fo=0,open=0,e=eomS(),pe=monEnd(prevMonth(cur));
+  wallets.forEach(function(w){open+=wbal(w,pe)});
+  if(cur==tk){
+    wallets.forEach(function(w){tot+=wbal(w);fo+=wbal(w,e)});
+    $("bal").textContent=mv(tot);$("bdl").textContent="Số Dư Hôm Nay · "+fshort(today());
+    var d=fo-tot;
+    $("bfc").innerHTML=(d?"📅 Dự kiến hết tháng: "+mv(fo)+(hideBal?"":" ("+(d>0?"+":"−")+vnd(Math.abs(d))+")"):"")+"<br>⏮ Đầu tháng (từ tháng trước chuyển sang): "+mv(open);
+  }else{
+    var me=monEnd(cur);wallets.forEach(function(w){fo+=wbal(w,me)});
+    var fut=cur>tk,p=cur.split("-");
+    $("bal").textContent=mv(fo);
+    $("bdl").textContent=(fut?"Số Dư Dự Kiến Cuối Tháng ":"Số Dư Cuối Tháng ")+p[1]+"/"+p[0];
+    $("bfc").innerHTML="⏮ Đầu tháng (từ tháng trước chuyển sang): "+mv(open);
+  }
 }
 function renderBalChart(){
   var t=today(),base=new Date(+t.slice(0,4),+t.slice(5,7)-1,+t.slice(8)),init=0,days=[];

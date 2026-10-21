@@ -12,6 +12,7 @@
 - Danh sách giao dịch nhóm theo ngày, hiển thị tổng chi của từng ngày
 - Giao dịch định kỳ, ngân sách, mục tiêu tiết kiệm, theo dõi nợ
 - Biểu đồ thu chi và diễn biến số dư
+- Biểu đồ phân tích chi tiêu: tỷ trọng theo danh mục, chi từng ngày, chi theo thứ trong tuần, so với tháng trước, 5 khoản chi lớn nhất
 - Sao lưu, khôi phục và xuất CSV
 
 ## Nội dung gói
@@ -45,4 +46,4 @@ npx cap open ios
 - Sao lưu định kỳ tại **Sao Lưu** > **Xuất File**; khôi phục bằng **Nhập File**.
 
 ## Cập nhật
-Khi thay đổi `index.html`, tăng tên cache trong `sw.js` (hiện là `sothuchi-v8`) để thiết bị tải bản mới.
+Khi thay đổi `index.html`, tăng tên cache trong `sw.js` (hiện là `sothuchi-v10`) để thiết bị tải bản mới.

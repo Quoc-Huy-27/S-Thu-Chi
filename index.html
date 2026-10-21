@@ -85,6 +85,15 @@ button.add:active{transform:scale(.98)}
 #list .item[data-ic]::before,.sheet .item[data-ic]::before{content:attr(data-ic);font-size:21px;font-weight:400}
 .sheet .item::before{background:var(--card)}
 #wl .item[data-ic]::before{content:attr(data-ic);font-size:21px}
+.viz .vt{font-weight:700;font-size:14px;margin:18px 0 8px}.viz .vt:first-child{margin-top:4px}
+.viz .lg{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:14px;border-bottom:1px solid var(--bd)}.viz .lg:last-child{border:0}
+.viz .lg i{width:10px;height:10px;border-radius:3px;flex:none}.viz .lg span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.viz .lg small{color:var(--mut);text-align:right;min-width:70px}
+.viz .dn{display:block;margin:0 auto;width:170px;max-width:60%}
+.wk{display:flex;gap:6px;align-items:flex-end;height:110px}.wk .c{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%}
+.wk i{display:block;width:100%;border-radius:6px 6px 0 0;background:var(--out);opacity:.5;min-height:2px}.wk .mx i{opacity:1}
+.wk small{font-size:11px;color:var(--mut)}.wk .v{font-size:10px;color:var(--tx);margin-bottom:2px}
+.viz .item[data-ic]::before{content:attr(data-ic);font-size:21px}.viz .item{padding:8px 0}
 .cic{font-size:20px;padding:2px 8px!important}
 .ipk{background:var(--card);border-radius:14px;padding:8px;margin:2px 0 8px}.ipk .ipg{display:flex;flex-wrap:wrap;gap:2px;margin-bottom:6px}
 .ipk .ipb{width:auto;margin:0;border:0;background:none;font-size:23px;padding:5px 7px;border-radius:10px}.ipk .ipb:active{background:var(--bg)}
@@ -225,7 +234,7 @@ button.av.on{border-color:var(--pri);background:rgba(212,160,23,.15)}
   </div>
   <div class="sbar" id="sbar"><i id="sfill"></i></div><div class="bfc" id="snote" style="margin-top:6px"></div>
 </div>
-<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><p class="h2">Các ví</p><button class="lnk" id="wedit" type="button">✏️ Sửa</button></div><div id="wl"></div><div class="row" style="margin-top:10px"><input id="wn" type="text" placeholder="Tên ví mới"><input id="wi" type="text" inputmode="numeric" placeholder="Số dư ban đầu"></div><button class="add" id="wadd" type="button">Thêm ví</button></div>
+<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><p class="h2">Các ví</p><button class="lnk" id="wedit" type="button">✏️ Sửa</button></div><div id="wl"></div><div class="row" style="margin-top:10px"><button id="wicb" class="cic" type="button" style="flex:none;width:54px;margin-bottom:8px" title="Chọn icon">👛</button><input id="wn" type="text" placeholder="Tên ví mới"><input id="wi" type="text" inputmode="numeric" placeholder="Số dư ban đầu"></div><div class="ipk" id="wpkn" style="display:none"></div><button class="add" id="wadd" type="button">Thêm ví</button></div>
 <div class="card">
   <div class="seg">
     <button class="on o" id="bo" type="button">💸 Chi</button>
@@ -258,6 +267,7 @@ button.av.on{border-color:var(--pri);background:rgba(212,160,23,.15)}
 </div>
 <div class="card"><div class="hd"><p class="h2">Hạn Mức Chi (Tháng Đang Chọn)</p><button class="lnk" id="bedit" type="button">✏️ Sửa</button></div><div id="bl"></div></div>
 <div class="card"><p class="h2">Phân Tích Chi Tiêu</p><div id="an"></div></div>
+<div class="card"><p class="h2">Biểu Đồ Chi Tiêu</p><div id="viz" class="viz"></div></div>
 <div class="card"><p class="h2">Diễn Biến Số Dư (±14 Ngày)</p><div id="bch"></div></div>
 <div class="card"><p class="h2">So sánh các tháng</p><div id="ch1"></div></div>
 <div class="card"><p class="h2">Chi theo danh mục (tháng đang chọn)</p><div id="ch2"></div></div>
@@ -409,7 +419,65 @@ function renderCharts(){
   var cs=Object.keys(c).sort(function(a,b){return c[b]-c[a]});
   $("ch2").innerHTML=cs.length?cs.map(function(k){var p=Math.round(c[k]/tot*100);
     return "<div class='cr'><div class='t'><span>"+ico("o",k)+" "+esc(k)+" · "+p+"%</span><b>"+vnd(c[k])+"</b></div><div class='bar'><b style='width:"+p+"%'></b></div>"+subRows(sb[k],c[k])+"</div>"}).join(""):"<div class='empty'>Chưa có khoản chi trong tháng này</div>";
-  renderAn(cur);
+  renderAn(cur);renderViz(cur);
+}
+
+var VPAL=["#ef4444","#f59e0b","#3b82f6","#10b981","#8b5cf6","#ec4899","#14b8a6","#94a3b8"];
+function shortN(n){return n>=1e6?(n/1e6).toFixed(1).replace(".0","").replace(".",",")+"tr":n>=1e3?Math.round(n/1e3)+"k":String(n)}
+function renderViz(cur){
+  var el=$("viz");if(!el)return;
+  var ex=data.filter(function(x){return x.t=="o"&&x.d.slice(0,7)==cur});
+  if(!ex.length){el.innerHTML="<div class='empty'>Chưa có khoản chi trong tháng này</div>";return}
+  var tot=0,cat={};ex.forEach(function(x){tot+=x.a;cat[x.c]=(cat[x.c]||0)+x.a});
+  var cs=Object.keys(cat).sort(function(a,b){return cat[b]-cat[a]}),h="";
+  /* 1. Donut: tỷ trọng theo danh mục */
+  var segs=cs.slice(0,6).map(function(k){return{n:k,v:cat[k],ic:ico("o",k)}}),rest=cs.slice(6),rs=0;
+  rest.forEach(function(k){rs+=cat[k]});
+  if(rest.length)segs.push({n:"Còn lại ("+rest.length+" mục)",v:rs,ic:"➕"});
+  var R=40,C=2*Math.PI*R,off=0,arcs="";
+  segs.forEach(function(g,i){var len=g.v/tot*C;arcs+="<circle cx='60' cy='60' r='"+R+"' fill='none' stroke='"+VPAL[i]+"' stroke-width='18' stroke-dasharray='"+len.toFixed(2)+" "+(C-len).toFixed(2)+"' stroke-dashoffset='"+(-off).toFixed(2)+"' transform='rotate(-90 60 60)'/>";off+=len});
+  h+="<p class='vt'>🍩 Tiêu khoản nào nhiều, khoản nào ít</p><svg class='dn' viewBox='0 0 120 120'>"+arcs+"<text x='60' y='56' text-anchor='middle' font-size='8' fill='var(--mut)'>Tổng chi</text><text x='60' y='70' text-anchor='middle' font-size='13' font-weight='700' fill='var(--tx)'>"+shortN(tot)+"</text></svg>";
+  h+=segs.map(function(g,i){return "<div class='lg'><i style='background:"+VPAL[i]+"'></i><span>"+g.ic+" "+esc(g.n)+"</span><b>"+Math.round(g.v/tot*100)+"%</b><small>"+vnd(g.v)+"</small></div>"}).join("");
+  /* 2. Chi theo ngày */
+  var p=cur.split("-"),y=+p[0],m=+p[1],dim=new Date(y,m,0).getDate(),tdy=today(),el2=cur==tdy.slice(0,7)?+tdy.slice(8):(cur<tdy.slice(0,7)?dim:0),
+      dv=[],mxd=0,mxi=0,wk=[0,0,0,0,0,0,0];
+  for(var d=1;d<=dim;d++)dv[d]=0;
+  ex.forEach(function(x){var d=+x.d.slice(8);dv[d]+=x.a;wk[new Date(y,m-1,d).getDay()]+=x.a});
+  for(var d2=1;d2<=dim;d2++)if(dv[d2]>mxd){mxd=dv[d2];mxi=d2}
+  var bw=280/dim,bars="",avg=el2?tot/el2:0,ay=95-avg/(mxd||1)*85;
+  for(var d3=1;d3<=dim;d3++){
+    var bh=dv[d3]/(mxd||1)*85,x0=10+(d3-1)*bw;
+    if(dv[d3]>0)bars+="<rect x='"+(x0+bw*.15).toFixed(1)+"' y='"+(95-bh).toFixed(1)+"' width='"+(bw*.7).toFixed(1)+"' height='"+bh.toFixed(1)+"' rx='1.5' fill='var(--out)' opacity='"+(d3==mxi?1:.5)+"'/>";
+    if(d3==1||d3%5==0)bars+="<text x='"+(x0+bw/2).toFixed(1)+"' y='109' text-anchor='middle' font-size='8' fill='var(--mut)'>"+d3+"</text>";
+  }
+  var mxx=10+(mxi-1)*bw+bw/2;
+  h+="<p class='vt'>📅 Chi tiêu từng ngày</p><svg viewBox='0 0 300 115' style='width:100%;height:auto;display:block'>"+bars
+    +(avg?"<line x1='10' x2='290' y1='"+ay.toFixed(1)+"' y2='"+ay.toFixed(1)+"' stroke='var(--mut)' stroke-dasharray='3 3' opacity='.7'/>":"")
+    +"<text x='"+Math.min(Math.max(mxx,22),278).toFixed(1)+"' y='"+(95-mxd/(mxd||1)*85-3).toFixed(1)+"' text-anchor='middle' font-size='8' font-weight='700' fill='var(--tx)'>"+shortN(mxd)+"</text></svg>"
+    +"<p class='leg' style='margin:2px 0 0'>Ngày chi nhiều nhất: <b>"+fshort(cur+"-"+pad(mxi))+"</b> · Đường nét đứt: trung bình "+shortN(Math.round(avg))+"/ngày</p>";
+  /* 3. Theo thứ trong tuần */
+  var ord=[1,2,3,4,5,6,0],lb=["T2","T3","T4","T5","T6","T7","CN"],mxw=0,mwi=0;
+  ord.forEach(function(g,i){if(wk[g]>mxw){mxw=wk[g];mwi=i}});
+  h+="<p class='vt'>🗓️ Chi theo thứ trong tuần</p><div class='wk'>"+ord.map(function(g,i){
+    return "<div class='c"+(i==mwi?" mx":"")+"'><span class='v'>"+(wk[g]?shortN(wk[g]):"")+"</span><i style='height:"+(wk[g]/(mxw||1)*70).toFixed(0)+"px'></i><small>"+lb[i]+"</small></div>"}).join("")+"</div>";
+  /* 4. So với tháng trước theo danh mục */
+  var pk=prevMonth(cur),pc={},pt=0;
+  data.forEach(function(x){if(x.t=="o"&&x.d.slice(0,7)==pk){pc[x.c]=(pc[x.c]||0)+x.a;pt+=x.a}});
+  h+="<p class='vt'>📈 So với tháng trước</p>";
+  if(!pt)h+="<p class='leg'>Chưa có dữ liệu chi của tháng trước để so sánh.</p>";
+  else{
+    var all=Object.keys(cat).concat(Object.keys(pc).filter(function(k){return !(k in cat)}));
+    all.sort(function(a,b){return Math.max(cat[b]||0,pc[b]||0)-Math.max(cat[a]||0,pc[a]||0)});
+    h+=all.slice(0,6).map(function(k){
+      var c1=cat[k]||0,c0=pc[k]||0,t,cl;
+      if(!c0){t="Mới";cl="out"}else{var df=Math.round((c1-c0)/c0*100);t=df>0?"▲ "+df+"%":df<0?"▼ "+Math.abs(df)+"%":"＝";cl=df>0?"out":df<0?"in":""}
+      return "<div class='lg'><span>"+ico("o",k)+" "+esc(k)+"</span><b>"+vnd(c1)+"</b><small class='"+cl+"'>"+t+"</small></div>"}).join("");
+  }
+  /* 5. Top khoản chi lớn */
+  var top=ex.slice().sort(function(a,b){return b.a-a.a}).slice(0,5);
+  h+="<p class='vt'>💥 5 khoản chi lớn nhất</p>"+top.map(function(x){
+    return "<div class='item' data-ic='"+ico("o",x.c)+"'><div class='m'><b>"+catLbl(x)+(x.n?" · "+esc(x.n):"")+"</b><small>"+fshort(x.d)+"</small></div><b class='out'>"+vnd(x.a)+"</b></div>"}).join("");
+  el.innerHTML=h;
 }
 function subRows(m,total){
   if(!m)return "";var ks=Object.keys(m).sort(function(a,b){return m[b]-m[a]}),sm=0,h="";
@@ -445,9 +513,24 @@ function renderWallets(){
   updBal();
 }
 $("wi").oninput=function(){var v=this.value.replace(/\D/g,"");this.value=v?Number(v).toLocaleString("vi-VN"):""};
+var newIc="👛";
+$("wicb").onclick=function(){
+  var b=$("wpkn");
+  if(b.style.display=="none"){b.innerHTML="<div class='ipg'>"+WICSET.map(function(e){return "<button class='ipb' data-np='"+e+"' type='button'>"+e+"</button>"}).join("")+"</div><div class='cmr'><input data-cic='1' placeholder='Hoặc gõ icon riêng' maxlength='8'><button class='add' data-npu='1' type='button'>Dùng</button></div>";b.style.display=""}
+  else b.style.display="none";
+};
+$("wpkn").onclick=function(e){
+  var b=e.target.closest("button");if(!b)return;
+  var v=b.getAttribute("data-np");
+  if(v===null&&b.getAttribute("data-npu")){v=this.querySelector("[data-cic]").value.trim();if(!v)return}
+  if(v===null)return;
+  newIc=v;$("wicb").textContent=v;this.style.display="none";
+};
 $("wadd").onclick=function(){var n=$("wn").value.trim();if(!n){$("wn").focus();return}
-  wallets.push({id:Date.now(),n:n,init:parseInt($("wi").value.replace(/\D/g,""),10)||0});
-  save();$("wn").value="";$("wi").value="";render()};
+  var nw={id:Date.now(),n:n,init:parseInt($("wi").value.replace(/\D/g,""),10)||0};
+  if(newIc!="👛")nw.ic=newIc;
+  wallets.push(nw);
+  save();$("wn").value="";$("wi").value="";newIc="👛";$("wicb").textContent="👛";render()};
 $("wl").onclick=function(e){
   var b=e.target.closest("button");
   if(b){var wc=b.getAttribute("data-wic"),pk=b.getAttribute("data-wpick"),pu=b.getAttribute("data-wpicku"),pr=b.getAttribute("data-wpickr");
@@ -917,7 +1000,7 @@ function initPick(id,k,optional){
   };
 }
 initPick("dd0","dd0",false);initPick("ddue","due",true);
-var TAB_MAP={home:[".sum","#wl","#bl","#bch"],tx:["#amt","#list","#rl"],stat:["#an","#ch1","#ch2"],debt:["#dlist","#gl"],more:["#pnm","#bk"]};
+var TAB_MAP={home:[".sum","#wl","#bl","#bch"],tx:["#amt","#list","#rl"],stat:["#an","#viz","#ch1","#ch2"],debt:["#dlist","#gl"],more:["#pnm","#bk"]};
 function initTabs(){
   Object.keys(TAB_MAP).forEach(function(t){
     TAB_MAP[t].forEach(function(s){

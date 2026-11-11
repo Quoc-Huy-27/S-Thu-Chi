@@ -226,16 +226,16 @@ button.av.on{border-color:var(--pri);background:rgba(212,160,23,.15)}
 #ch2i .cr .bar b{background:linear-gradient(90deg,#86efac,#16a34a)!important}
 #vizi .wk i{background:var(--in)}
 .vt{font-weight:700;margin:6px 0 6px}
-.pair{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}.pair>div{min-width:0}
-.pair .ph{text-align:center;padding:6px 4px;border-radius:10px;background:var(--bg);font-size:14px;margin:0 0 8px}
-.pair .ag{grid-template-columns:1fr;gap:6px}.pair .st{padding:8px 10px}.pair .st b{font-size:14px;overflow-wrap:anywhere}.pair .st em{white-space:normal}
-.pair .vt:not(.ph){font-size:12px;margin:12px 0 4px}
-.pair .viz .lg{flex-wrap:wrap;gap:2px 6px;font-size:12px;padding:5px 0}.pair .viz .lg small{min-width:0;flex-basis:100%;text-align:left;padding-left:16px}
-.pair .viz .lg span{flex:1 1 40%}
-.pair .wk{gap:3px}.pair .wk .v{font-size:8px}
-.pair .cr .t{flex-wrap:wrap;font-size:13px}.pair .cr .t b{font-size:13px}
-.pair .item{padding:8px 4px;gap:2px 6px;flex-wrap:wrap;align-items:flex-start}.pair .item .m{flex:1 1 100%;min-width:0}.pair .item .m small{white-space:normal}.pair .item::before{display:none}.pair .item .m b{font-size:13px}.pair .item>b{font-size:13px}
-.pair .leg{font-size:11px}
+.cols2{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}.cols2>div{min-width:0}
+.cols2 .ph{text-align:center;padding:6px 4px;border-radius:10px;background:var(--bg);font-size:14px;margin:0 0 8px}
+.cols2 .ag{grid-template-columns:1fr;gap:6px}.cols2 .st{padding:8px 10px}.cols2 .st b{font-size:14px;overflow-wrap:anywhere}.cols2 .st em{white-space:normal}
+.cols2 .vt:not(.ph){font-size:12px;margin:12px 0 4px}
+.cols2 .viz .lg{flex-wrap:wrap;gap:2px 6px;font-size:12px;padding:5px 0}.cols2 .viz .lg small{min-width:0;flex-basis:100%;text-align:left;padding-left:16px}
+.cols2 .viz .lg span{flex:1 1 40%}
+.cols2 .wk{gap:3px}.cols2 .wk .v{font-size:8px}
+.cols2 .cr .t{flex-wrap:wrap;font-size:13px}.cols2 .cr .t b{font-size:13px}
+.cols2 .item{padding:8px 4px;gap:2px 6px;flex-wrap:wrap;align-items:flex-start}.cols2 .item .m{flex:1 1 100%;min-width:0}.cols2 .item .m small{white-space:normal}.cols2 .item::before{display:none}.cols2 .item .m b{font-size:13px}.cols2 .item>b{font-size:13px}
+.cols2 .leg{font-size:11px}
 #ss .st em{white-space:normal}
 .sheet .item.f{opacity:.75}
 .sheet .item .m b{white-space:normal;overflow:visible}
@@ -293,11 +293,11 @@ button.av.on{border-color:var(--pri);background:rgba(212,160,23,.15)}
 <div class="card"><div class="hd"><p class="h2">Hạn Mức Chi (Tháng Đang Chọn)</p><button class="lnk" id="bedit" type="button">✏️ Sửa</button></div><div id="bl"></div></div>
 <div class="card" id="sk"><p class="h2">Tổng Quan Thu Chi (tháng đang chọn)</p><div id="ss"></div></div>
 <div class="card" id="dc"><p class="h2">Thu &amp; Chi Từng Ngày</p><div id="dcmp"></div></div>
-<div class="card"><p class="h2">Phân Tích Thu &amp; Chi</p><div class="pair"><div><p class="vt ph in">💰 Thu</p><div id="ani"></div></div><div><p class="vt ph out">💸 Chi</p><div id="ano"></div></div></div></div>
-<div class="card"><p class="h2">Biểu Đồ Thu &amp; Chi</p><div class="pair"><div><p class="vt ph in">💰 Thu</p><div id="vizi" class="viz"></div></div><div><p class="vt ph out">💸 Chi</p><div id="vizo" class="viz"></div></div></div></div>
+<div class="card"><p class="h2">Phân Tích Thu &amp; Chi</p><div class="cols2"><div><p class="vt ph in">💰 Thu</p><div id="ani"></div></div><div><p class="vt ph out">💸 Chi</p><div id="ano"></div></div></div></div>
+<div class="card"><p class="h2">Biểu Đồ Thu &amp; Chi</p><div class="cols2"><div><p class="vt ph in">💰 Thu</p><div id="vizi" class="viz"></div></div><div><p class="vt ph out">💸 Chi</p><div id="vizo" class="viz"></div></div></div></div>
 <div class="card"><p class="h2">Diễn Biến Số Dư (±14 Ngày)</p><div id="bch"></div></div>
 <div class="card"><p class="h2">So sánh các tháng</p><div id="ch1"></div></div>
-<div class="card"><p class="h2">Thu &amp; Chi Theo Danh Mục (tháng đang chọn)</p><div class="pair"><div><p class="vt ph in">💰 Thu theo nguồn</p><div id="ch2i"></div></div><div><p class="vt ph out">💸 Chi theo danh mục</p><div id="ch2o"></div></div></div></div>
+<div class="card"><p class="h2">Thu &amp; Chi Theo Danh Mục (tháng đang chọn)</p><div class="cols2"><div><p class="vt ph in">💰 Thu theo nguồn</p><div id="ch2i"></div></div><div><p class="vt ph out">💸 Chi theo danh mục</p><div id="ch2o"></div></div></div></div>
 <div class="card"><div class="hd"><p class="h2">Giao Dịch Định Kỳ</p><button class="lnk edt" type="button">✏️ Sửa</button></div><div id="rl"></div><p class="leg">Khi thêm giao dịch, bật công tắc “Lặp lại hàng tháng”. App tự ghi vào đúng ngày mỗi tháng khi bạn mở app. Chạm vào một khoản để xem lịch từng ngày, sửa hoặc xóa.</p></div>
 <div class="card"><div class="hd"><p class="h2">Vay &amp; Nợ</p><button class="lnk edt" type="button">✏️ Sửa</button></div><div class="ag" id="ds"></div><div id="dlist" style="margin-top:8px"></div>
   <div class="seg" style="margin-top:10px"><button class="on t" id="dk1" type="button">📤 Tôi Cho Vay</button><button id="dk2" type="button">📥 Tôi Đi Vay</button></div>
@@ -442,13 +442,17 @@ function renderCharts(){
   var ks=Object.keys(m).sort().slice(-6),mx=1;
   ks.forEach(function(k){mx=Math.max(mx,m[k].i,m[k].o)});
   if(!ks.length){$("ch1").innerHTML="<div class='empty'>Chưa có dữ liệu</div>"}else{
-    var hi=ks[0],lo=ks[0],hiI=ks[0];ks.forEach(function(k){if(m[k].i>m[hiI].i)hiI=k;if(m[k].o>m[hi].o)hi=k;if(m[k].o<m[lo].o)lo=k});
-    function f(k){var p=k.split("-");return "Tháng "+p[1]+", "+p[0]}
-    $("ch1").innerHTML="<div class='bars'>"+ks.map(function(k){var p=k.split("-");
-      return "<div class='col'><div class='pair'><i class='bin' style='height:"+(m[k].i/mx*100)+"%'></i><i class='bout' style='height:"+(m[k].o/mx*100)+"%'></i></div><small>"+p[1]+"/"+p[0].slice(2)+"</small></div>"}).join("")+"</div>"
-      +"<p class='leg'><span class='in'>■</span> Thu &nbsp; <span class='out'>■</span> Chi</p>"
-      +(ks.length>1?"<p class='leg'>Chi nhiều nhất: <b>"+f(hi)+"</b> ("+vnd(m[hi].o)+") · ít nhất: <b>"+f(lo)+"</b> ("+vnd(m[lo].o)+")</p>":"")
-      +(ks.length>1&&m[hiI].i>0?"<p class='leg'>Thu nhiều nhất: <b>"+f(hiI)+"</b> ("+vnd(m[hiI].i)+")</p>":"");
+    var cw=300/ks.length,bw=Math.min(18,cw*.3),sel=$("month").value,g="";
+    ks.forEach(function(k,i){
+      var cx=i*cw+cw/2,hi=m[k].i/mx*68,ho=m[k].o/mx*68,net=m[k].i-m[k].o,p=k.split("-");
+      if(k==sel)g+="<rect x='"+(i*cw+2).toFixed(1)+"' y='2' width='"+(cw-4).toFixed(1)+"' height='126' rx='8' fill='var(--bg)'/>";
+      if(m[k].i>0)g+="<rect x='"+(cx-bw-1).toFixed(1)+"' y='"+(88-hi).toFixed(1)+"' width='"+bw.toFixed(1)+"' height='"+hi.toFixed(1)+"' rx='3' fill='var(--in)'/><text x='"+(cx-bw/2-1).toFixed(1)+"' y='"+(85-hi).toFixed(1)+"' text-anchor='middle' font-size='7.5' fill='var(--tx)'>"+shortN(m[k].i)+"</text>";
+      if(m[k].o>0)g+="<rect x='"+(cx+1).toFixed(1)+"' y='"+(88-ho).toFixed(1)+"' width='"+bw.toFixed(1)+"' height='"+ho.toFixed(1)+"' rx='3' fill='var(--out)'/><text x='"+(cx+bw/2+1).toFixed(1)+"' y='"+(85-ho).toFixed(1)+"' text-anchor='middle' font-size='7.5' fill='var(--tx)'>"+shortN(m[k].o)+"</text>";
+      g+="<text x='"+cx.toFixed(1)+"' y='103' text-anchor='middle' font-size='9' font-weight='"+(k==sel?700:400)+"' fill='var(--tx)'>T"+(+p[1])+"/"+p[0].slice(2)+"</text>"
+        +"<text x='"+cx.toFixed(1)+"' y='118' text-anchor='middle' font-size='8.5' font-weight='700' fill='var(--"+(net>=0?"in":"out")+")'>"+(net>=0?"+":"−")+shortN(Math.abs(net))+"</text>";
+    });
+    $("ch1").innerHTML="<svg viewBox='0 0 300 130' style='width:100%;height:auto;display:block'><line x1='0' x2='300' y1='88' y2='88' stroke='var(--bd)'/>"+g+"</svg>"
+      +"<p class='leg' style='margin:4px 0 0'><span class='in'>■</span> Thu &nbsp; <span class='out'>■</span> Chi &nbsp;· Số dưới tháng: Thu − Chi · Nền sáng: tháng đang chọn</p>";
   }
   var cur=$("month").value;
   ["i","o"].forEach(function(K){SK=K;var c={},tot=0,sb={};
@@ -515,10 +519,6 @@ function renderViz(cur){
       if(!c0){t="Mới";cl=SK=="o"?"out":"in"}else{var df=Math.round((c1-c0)/c0*100);t=df>0?"▲ "+df+"%":df<0?"▼ "+Math.abs(df)+"%":"＝";cl=df==0?"":((df>0)==(SK=="o")?"out":"in")}
       return "<div class='lg'><span>"+ico(SK,k)+" "+esc(k)+"</span><b>"+vnd(c1)+"</b><small class='"+cl+"'>"+t+"</small></div>"}).join("");
   }
-  /* 5. Top khoản chi lớn */
-  var top=ex.slice().sort(function(a,b){return b.a-a.a}).slice(0,5);
-  h+="<p class='vt'>💥 5 khoản "+SW().n+" lớn nhất</p>"+top.map(function(x){
-    return "<div class='item' data-ic='"+ico(SK,x.c)+"'><div class='m'><b>"+catLbl(x)+(x.n?" · "+esc(x.n):"")+"</b><small>"+fshort(x.d)+"</small></div><b class='"+SW().c+"'>"+vnd(x.a)+"</b></div>"}).join("");
   el.innerHTML=h;
 }
 function subRows(m,total){

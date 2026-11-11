@@ -13,7 +13,7 @@
 - Giao dịch định kỳ: chạm để xem lịch từng ngày, sửa số tiền, ví, danh mục, ngày ghi hoặc xóa
 - Chạm vào Số Dư, dòng “Dự kiến hết tháng” hoặc từng ví để xem biến động số dư theo từng ngày
 - Gợi ý tên khoản dưới ô ghi chú (tách riêng thu và chi, theo danh mục, tần suất dùng và chữ đang gõ); chạm để điền nhanh tên, danh mục và số tiền lần trước
-- Thống kê có tổng quan Thu / Chi / Thu − Chi và biểu đồ Thu – Chi từng ngày; phân tích, biểu đồ, danh mục hiện cả Thu lẫn Chi trên cùng một màn hình
+- Thống kê có tổng quan Thu / Chi / Thu − Chi và biểu đồ Thu – Chi từng ngày; phân tích, biểu đồ, danh mục hiện Thu và Chi song song hai cột để dễ so sánh
 - Ngân sách, theo dõi nợ
 - Mục tiêu tiết kiệm: chọn ví để góp (trừ tiền khỏi ví) hoặc rút (cộng lại vào ví), có lịch sử từng lần góp
 - Biểu đồ thu chi và diễn biến số dư
@@ -51,4 +51,4 @@ npx cap open ios
 - Sao lưu định kỳ tại **Sao Lưu** > **Xuất File**; khôi phục bằng **Nhập File**.
 
 ## Cập nhật
-Khi thay đổi `index.html`, tăng tên cache trong `sw.js` (hiện là `sothuchi-v17`) để thiết bị tải bản mới.
+Khi thay đổi `index.html`, tăng tên cache trong `sw.js` (hiện là `sothuchi-v18`) để thiết bị tải bản mới.

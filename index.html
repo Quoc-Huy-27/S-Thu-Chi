@@ -226,6 +226,16 @@ button.av.on{border-color:var(--pri);background:rgba(212,160,23,.15)}
 #ch2i .cr .bar b{background:linear-gradient(90deg,#86efac,#16a34a)!important}
 #vizi .wk i{background:var(--in)}
 .vt{font-weight:700;margin:6px 0 6px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}.pair>div{min-width:0}
+.pair .ph{text-align:center;padding:6px 4px;border-radius:10px;background:var(--bg);font-size:14px;margin:0 0 8px}
+.pair .ag{grid-template-columns:1fr;gap:6px}.pair .st{padding:8px 10px}.pair .st b{font-size:14px;overflow-wrap:anywhere}.pair .st em{white-space:normal}
+.pair .vt:not(.ph){font-size:12px;margin:12px 0 4px}
+.pair .viz .lg{flex-wrap:wrap;gap:2px 6px;font-size:12px;padding:5px 0}.pair .viz .lg small{min-width:0;flex-basis:100%;text-align:left;padding-left:16px}
+.pair .viz .lg span{flex:1 1 40%}
+.pair .wk{gap:3px}.pair .wk .v{font-size:8px}
+.pair .cr .t{flex-wrap:wrap;font-size:13px}.pair .cr .t b{font-size:13px}
+.pair .item{padding:8px 4px;gap:2px 6px;flex-wrap:wrap;align-items:flex-start}.pair .item .m{flex:1 1 100%;min-width:0}.pair .item .m small{white-space:normal}.pair .item::before{display:none}.pair .item .m b{font-size:13px}.pair .item>b{font-size:13px}
+.pair .leg{font-size:11px}
 #ss .st em{white-space:normal}
 .sheet .item.f{opacity:.75}
 .sheet .item .m b{white-space:normal;overflow:visible}
@@ -283,11 +293,11 @@ button.av.on{border-color:var(--pri);background:rgba(212,160,23,.15)}
 <div class="card"><div class="hd"><p class="h2">Hạn Mức Chi (Tháng Đang Chọn)</p><button class="lnk" id="bedit" type="button">✏️ Sửa</button></div><div id="bl"></div></div>
 <div class="card" id="sk"><p class="h2">Tổng Quan Thu Chi (tháng đang chọn)</p><div id="ss"></div></div>
 <div class="card" id="dc"><p class="h2">Thu &amp; Chi Từng Ngày</p><div id="dcmp"></div></div>
-<div class="card"><p class="h2">Phân Tích Thu &amp; Chi</p><p class="vt">💰 Thu nhập</p><div id="ani"></div><p class="vt" style="margin-top:14px">💸 Chi tiêu</p><div id="ano"></div></div>
-<div class="card"><p class="h2">Biểu Đồ Thu &amp; Chi</p><div id="vizi" class="viz"></div><div id="vizo" class="viz" style="margin-top:18px;padding-top:14px;border-top:1px dashed var(--bd)"></div></div>
+<div class="card"><p class="h2">Phân Tích Thu &amp; Chi</p><div class="pair"><div><p class="vt ph in">💰 Thu</p><div id="ani"></div></div><div><p class="vt ph out">💸 Chi</p><div id="ano"></div></div></div></div>
+<div class="card"><p class="h2">Biểu Đồ Thu &amp; Chi</p><div class="pair"><div><p class="vt ph in">💰 Thu</p><div id="vizi" class="viz"></div></div><div><p class="vt ph out">💸 Chi</p><div id="vizo" class="viz"></div></div></div></div>
 <div class="card"><p class="h2">Diễn Biến Số Dư (±14 Ngày)</p><div id="bch"></div></div>
 <div class="card"><p class="h2">So sánh các tháng</p><div id="ch1"></div></div>
-<div class="card"><p class="h2">Thu &amp; Chi Theo Danh Mục (tháng đang chọn)</p><p class="vt">💰 Thu theo nguồn</p><div id="ch2i"></div><p class="vt" style="margin-top:14px">💸 Chi theo danh mục</p><div id="ch2o"></div></div>
+<div class="card"><p class="h2">Thu &amp; Chi Theo Danh Mục (tháng đang chọn)</p><div class="pair"><div><p class="vt ph in">💰 Thu theo nguồn</p><div id="ch2i"></div></div><div><p class="vt ph out">💸 Chi theo danh mục</p><div id="ch2o"></div></div></div></div>
 <div class="card"><div class="hd"><p class="h2">Giao Dịch Định Kỳ</p><button class="lnk edt" type="button">✏️ Sửa</button></div><div id="rl"></div><p class="leg">Khi thêm giao dịch, bật công tắc “Lặp lại hàng tháng”. App tự ghi vào đúng ngày mỗi tháng khi bạn mở app. Chạm vào một khoản để xem lịch từng ngày, sửa hoặc xóa.</p></div>
 <div class="card"><div class="hd"><p class="h2">Vay &amp; Nợ</p><button class="lnk edt" type="button">✏️ Sửa</button></div><div class="ag" id="ds"></div><div id="dlist" style="margin-top:8px"></div>
   <div class="seg" style="margin-top:10px"><button class="on t" id="dk1" type="button">📤 Tôi Cho Vay</button><button id="dk2" type="button">📥 Tôi Đi Vay</button></div>

@@ -223,6 +223,10 @@ button.av.on{border-color:var(--pri);background:rgba(212,160,23,.15)}
 .chips{display:flex;gap:6px;overflow-x:auto;margin:-2px 0 8px;padding-bottom:2px;-webkit-overflow-scrolling:touch}
 .chips button{width:auto;flex:none;margin:0;padding:6px 12px;border-radius:999px;font-size:13px;white-space:nowrap;background:var(--card);color:var(--tx)}
 .card:not(.ed) #wnew{display:none}
+#ch2i .cr .bar b{background:linear-gradient(90deg,#86efac,#16a34a)!important}
+#vizi .wk i{background:var(--in)}
+.vt{font-weight:700;margin:6px 0 6px}
+#ss .st em{white-space:normal}
 .sheet .item.f{opacity:.75}
 .sheet .item .m b{white-space:normal;overflow:visible}
 .sheet .acts{display:flex;gap:8px;margin:4px 0 8px}.sheet .acts button{flex:1}
@@ -277,11 +281,13 @@ button.av.on{border-color:var(--pri);background:rgba(212,160,23,.15)}
   <div id="list"></div>
 </div>
 <div class="card"><div class="hd"><p class="h2">Hạn Mức Chi (Tháng Đang Chọn)</p><button class="lnk" id="bedit" type="button">✏️ Sửa</button></div><div id="bl"></div></div>
-<div class="card"><p class="h2">Phân Tích Chi Tiêu</p><div id="an"></div></div>
-<div class="card"><p class="h2">Biểu Đồ Chi Tiêu</p><div id="viz" class="viz"></div></div>
+<div class="card" id="sk"><p class="h2">Tổng Quan Thu Chi (tháng đang chọn)</p><div id="ss"></div></div>
+<div class="card" id="dc"><p class="h2">Thu &amp; Chi Từng Ngày</p><div id="dcmp"></div></div>
+<div class="card"><p class="h2">Phân Tích Thu &amp; Chi</p><p class="vt">💰 Thu nhập</p><div id="ani"></div><p class="vt" style="margin-top:14px">💸 Chi tiêu</p><div id="ano"></div></div>
+<div class="card"><p class="h2">Biểu Đồ Thu &amp; Chi</p><div id="vizi" class="viz"></div><div id="vizo" class="viz" style="margin-top:18px;padding-top:14px;border-top:1px dashed var(--bd)"></div></div>
 <div class="card"><p class="h2">Diễn Biến Số Dư (±14 Ngày)</p><div id="bch"></div></div>
 <div class="card"><p class="h2">So sánh các tháng</p><div id="ch1"></div></div>
-<div class="card"><p class="h2">Chi theo danh mục (tháng đang chọn)</p><div id="ch2"></div></div>
+<div class="card"><p class="h2">Thu &amp; Chi Theo Danh Mục (tháng đang chọn)</p><p class="vt">💰 Thu theo nguồn</p><div id="ch2i"></div><p class="vt" style="margin-top:14px">💸 Chi theo danh mục</p><div id="ch2o"></div></div>
 <div class="card"><div class="hd"><p class="h2">Giao Dịch Định Kỳ</p><button class="lnk edt" type="button">✏️ Sửa</button></div><div id="rl"></div><p class="leg">Khi thêm giao dịch, bật công tắc “Lặp lại hàng tháng”. App tự ghi vào đúng ngày mỗi tháng khi bạn mở app. Chạm vào một khoản để xem lịch từng ngày, sửa hoặc xóa.</p></div>
 <div class="card"><div class="hd"><p class="h2">Vay &amp; Nợ</p><button class="lnk edt" type="button">✏️ Sửa</button></div><div class="ag" id="ds"></div><div id="dlist" style="margin-top:8px"></div>
   <div class="seg" style="margin-top:10px"><button class="on t" id="dk1" type="button">📤 Tôi Cho Vay</button><button id="dk2" type="button">📥 Tôi Đi Vay</button></div>
@@ -426,37 +432,44 @@ function renderCharts(){
   var ks=Object.keys(m).sort().slice(-6),mx=1;
   ks.forEach(function(k){mx=Math.max(mx,m[k].i,m[k].o)});
   if(!ks.length){$("ch1").innerHTML="<div class='empty'>Chưa có dữ liệu</div>"}else{
-    var hi=ks[0],lo=ks[0];ks.forEach(function(k){if(m[k].o>m[hi].o)hi=k;if(m[k].o<m[lo].o)lo=k});
+    var hi=ks[0],lo=ks[0],hiI=ks[0];ks.forEach(function(k){if(m[k].i>m[hiI].i)hiI=k;if(m[k].o>m[hi].o)hi=k;if(m[k].o<m[lo].o)lo=k});
     function f(k){var p=k.split("-");return "Tháng "+p[1]+", "+p[0]}
     $("ch1").innerHTML="<div class='bars'>"+ks.map(function(k){var p=k.split("-");
       return "<div class='col'><div class='pair'><i class='bin' style='height:"+(m[k].i/mx*100)+"%'></i><i class='bout' style='height:"+(m[k].o/mx*100)+"%'></i></div><small>"+p[1]+"/"+p[0].slice(2)+"</small></div>"}).join("")+"</div>"
       +"<p class='leg'><span class='in'>■</span> Thu &nbsp; <span class='out'>■</span> Chi</p>"
-      +(ks.length>1?"<p class='leg'>Chi nhiều nhất: <b>"+f(hi)+"</b> ("+vnd(m[hi].o)+") · ít nhất: <b>"+f(lo)+"</b> ("+vnd(m[lo].o)+")</p>":"");
+      +(ks.length>1?"<p class='leg'>Chi nhiều nhất: <b>"+f(hi)+"</b> ("+vnd(m[hi].o)+") · ít nhất: <b>"+f(lo)+"</b> ("+vnd(m[lo].o)+")</p>":"")
+      +(ks.length>1&&m[hiI].i>0?"<p class='leg'>Thu nhiều nhất: <b>"+f(hiI)+"</b> ("+vnd(m[hiI].i)+")</p>":"");
   }
-  var cur=$("month").value,c={},tot=0,sb={};
-  data.forEach(function(x){if(x.t=="o"&&x.d.slice(0,7)==cur){c[x.c]=(c[x.c]||0)+x.a;tot+=x.a;if(x.s){sb[x.c]=sb[x.c]||{};sb[x.c][x.s]=(sb[x.c][x.s]||0)+x.a}}});
+  var cur=$("month").value;
+  ["i","o"].forEach(function(K){SK=K;var c={},tot=0,sb={};
+  data.forEach(function(x){if(x.t==SK&&x.d.slice(0,7)==cur){c[x.c]=(c[x.c]||0)+x.a;tot+=x.a;if(x.s){sb[x.c]=sb[x.c]||{};sb[x.c][x.s]=(sb[x.c][x.s]||0)+x.a}}});
   var cs=Object.keys(c).sort(function(a,b){return c[b]-c[a]});
-  $("ch2").innerHTML=cs.length?cs.map(function(k){var p=Math.round(c[k]/tot*100);
-    return "<div class='cr'><div class='t'><span>"+ico("o",k)+" "+esc(k)+" · "+p+"%</span><b>"+vnd(c[k])+"</b></div><div class='bar'><b style='width:"+p+"%'></b></div>"+subRows(sb[k],c[k])+"</div>"}).join(""):"<div class='empty'>Chưa có khoản chi trong tháng này</div>";
-  renderAn(cur);renderViz(cur);
+  $("ch2"+K).innerHTML=cs.length?cs.map(function(k){var p=Math.round(c[k]/tot*100);
+    return "<div class='cr'><div class='t'><span>"+ico(SK,k)+" "+esc(k)+" · "+p+"%</span><b>"+vnd(c[k])+"</b></div><div class='bar'><b style='width:"+p+"%'></b></div>"+subRows(sb[k],c[k])+"</div>"}).join(""):"<div class='empty'>"+"Chưa có khoản "+SW().n+" trong tháng này"+"</div>";
+  });
+  renderSS(cur);renderDaily(cur);
+  ["i","o"].forEach(function(K){SK=K;renderAn(cur);renderViz(cur)});
+  SK="o";
 }
 
+var VPALI=["#16a34a","#3b82f6","#f59e0b","#8b5cf6","#14b8a6","#ec4899","#94a3b8","#ef4444"];
+function VP(){return SK=="i"?VPALI:VPAL}
 var VPAL=["#ef4444","#f59e0b","#3b82f6","#10b981","#8b5cf6","#ec4899","#14b8a6","#94a3b8"];
 function shortN(n){return n>=1e6?(n/1e6).toFixed(1).replace(".0","").replace(".",",")+"tr":n>=1e3?Math.round(n/1e3)+"k":String(n)}
 function renderViz(cur){
-  var el=$("viz");if(!el)return;
-  var ex=data.filter(function(x){return x.t=="o"&&x.d.slice(0,7)==cur});
-  if(!ex.length){el.innerHTML="<div class='empty'>Chưa có khoản chi trong tháng này</div>";return}
+  var el=$("viz"+SK);if(!el)return;
+  var ex=data.filter(function(x){return x.t==SK&&x.d.slice(0,7)==cur});
+  if(!ex.length){el.innerHTML="<div class='empty'>"+"Chưa có khoản "+SW().n+" trong tháng này"+"</div>";return}
   var tot=0,cat={};ex.forEach(function(x){tot+=x.a;cat[x.c]=(cat[x.c]||0)+x.a});
   var cs=Object.keys(cat).sort(function(a,b){return cat[b]-cat[a]}),h="";
   /* 1. Donut: tỷ trọng theo danh mục */
-  var segs=cs.slice(0,6).map(function(k){return{n:k,v:cat[k],ic:ico("o",k)}}),rest=cs.slice(6),rs=0;
+  var segs=cs.slice(0,6).map(function(k){return{n:k,v:cat[k],ic:ico(SK,k)}}),rest=cs.slice(6),rs=0;
   rest.forEach(function(k){rs+=cat[k]});
   if(rest.length)segs.push({n:"Còn lại ("+rest.length+" mục)",v:rs,ic:"➕"});
   var R=40,C=2*Math.PI*R,off=0,arcs="";
-  segs.forEach(function(g,i){var len=g.v/tot*C;arcs+="<circle cx='60' cy='60' r='"+R+"' fill='none' stroke='"+VPAL[i]+"' stroke-width='18' stroke-dasharray='"+len.toFixed(2)+" "+(C-len).toFixed(2)+"' stroke-dashoffset='"+(-off).toFixed(2)+"' transform='rotate(-90 60 60)'/>";off+=len});
-  h+="<p class='vt'>🍩 Tiêu khoản nào nhiều, khoản nào ít</p><svg class='dn' viewBox='0 0 120 120'>"+arcs+"<text x='60' y='56' text-anchor='middle' font-size='8' fill='var(--mut)'>Tổng chi</text><text x='60' y='70' text-anchor='middle' font-size='13' font-weight='700' fill='var(--tx)'>"+shortN(tot)+"</text></svg>";
-  h+=segs.map(function(g,i){return "<div class='lg'><i style='background:"+VPAL[i]+"'></i><span>"+g.ic+" "+esc(g.n)+"</span><b>"+Math.round(g.v/tot*100)+"%</b><small>"+vnd(g.v)+"</small></div>"}).join("");
+  segs.forEach(function(g,i){var len=g.v/tot*C;arcs+="<circle cx='60' cy='60' r='"+R+"' fill='none' stroke='"+VP()[i]+"' stroke-width='18' stroke-dasharray='"+len.toFixed(2)+" "+(C-len).toFixed(2)+"' stroke-dashoffset='"+(-off).toFixed(2)+"' transform='rotate(-90 60 60)'/>";off+=len});
+  h+="<p class='vt'>🍩 "+(SK=="i"?"Nguồn thu nào nhiều, nguồn nào ít":"Tiêu khoản nào nhiều, khoản nào ít")+"</p><svg class='dn' viewBox='0 0 120 120'>"+arcs+"<text x='60' y='56' text-anchor='middle' font-size='8' fill='var(--mut)'>Tổng "+SW().n+"</text><text x='60' y='70' text-anchor='middle' font-size='13' font-weight='700' fill='var(--tx)'>"+shortN(tot)+"</text></svg>";
+  h+=segs.map(function(g,i){return "<div class='lg'><i style='background:"+VP()[i]+"'></i><span>"+g.ic+" "+esc(g.n)+"</span><b>"+Math.round(g.v/tot*100)+"%</b><small>"+vnd(g.v)+"</small></div>"}).join("");
   /* 2. Chi theo ngày */
   var p=cur.split("-"),y=+p[0],m=+p[1],dim=new Date(y,m,0).getDate(),tdy=today(),el2=cur==tdy.slice(0,7)?+tdy.slice(8):(cur<tdy.slice(0,7)?dim:0),
       dv=[],mxd=0,mxi=0,wk=[0,0,0,0,0,0,0];
@@ -466,36 +479,36 @@ function renderViz(cur){
   var bw=280/dim,bars="",avg=el2?tot/el2:0,ay=95-avg/(mxd||1)*85;
   for(var d3=1;d3<=dim;d3++){
     var bh=dv[d3]/(mxd||1)*85,x0=10+(d3-1)*bw;
-    if(dv[d3]>0)bars+="<rect x='"+(x0+bw*.15).toFixed(1)+"' y='"+(95-bh).toFixed(1)+"' width='"+(bw*.7).toFixed(1)+"' height='"+bh.toFixed(1)+"' rx='1.5' fill='var(--out)' opacity='"+(d3==mxi?1:.5)+"'/>";
+    if(dv[d3]>0)bars+="<rect x='"+(x0+bw*.15).toFixed(1)+"' y='"+(95-bh).toFixed(1)+"' width='"+(bw*.7).toFixed(1)+"' height='"+bh.toFixed(1)+"' rx='1.5' fill='var(--"+SW().c+")' opacity='"+(d3==mxi?1:.5)+"'/>";
     if(d3==1||d3%5==0)bars+="<text x='"+(x0+bw/2).toFixed(1)+"' y='109' text-anchor='middle' font-size='8' fill='var(--mut)'>"+d3+"</text>";
   }
   var mxx=10+(mxi-1)*bw+bw/2;
-  h+="<p class='vt'>📅 Chi tiêu từng ngày</p><svg viewBox='0 0 300 115' style='width:100%;height:auto;display:block'>"+bars
+  h+="<p class='vt'>📅 "+(SK=="i"?"Thu nhập từng ngày":"Chi tiêu từng ngày")+"</p><svg viewBox='0 0 300 115' style='width:100%;height:auto;display:block'>"+bars
     +(avg?"<line x1='10' x2='290' y1='"+ay.toFixed(1)+"' y2='"+ay.toFixed(1)+"' stroke='var(--mut)' stroke-dasharray='3 3' opacity='.7'/>":"")
     +"<text x='"+Math.min(Math.max(mxx,22),278).toFixed(1)+"' y='"+(95-mxd/(mxd||1)*85-3).toFixed(1)+"' text-anchor='middle' font-size='8' font-weight='700' fill='var(--tx)'>"+shortN(mxd)+"</text></svg>"
-    +"<p class='leg' style='margin:2px 0 0'>Ngày chi nhiều nhất: <b>"+fshort(cur+"-"+pad(mxi))+"</b> · Đường nét đứt: trung bình "+shortN(Math.round(avg))+"/ngày</p>";
+    +"<p class='leg' style='margin:2px 0 0'>Ngày "+SW().n+" nhiều nhất: <b>"+fshort(cur+"-"+pad(mxi))+"</b> · Đường nét đứt: trung bình "+shortN(Math.round(avg))+"/ngày</p>";
   /* 3. Theo thứ trong tuần */
   var ord=[1,2,3,4,5,6,0],lb=["T2","T3","T4","T5","T6","T7","CN"],mxw=0,mwi=0;
   ord.forEach(function(g,i){if(wk[g]>mxw){mxw=wk[g];mwi=i}});
-  h+="<p class='vt'>🗓️ Chi theo thứ trong tuần</p><div class='wk'>"+ord.map(function(g,i){
+  h+="<p class='vt'>🗓️ "+SW().N+" theo thứ trong tuần</p><div class='wk'>"+ord.map(function(g,i){
     return "<div class='c"+(i==mwi?" mx":"")+"'><span class='v'>"+(wk[g]?shortN(wk[g]):"")+"</span><i style='height:"+(wk[g]/(mxw||1)*70).toFixed(0)+"px'></i><small>"+lb[i]+"</small></div>"}).join("")+"</div>";
   /* 4. So với tháng trước theo danh mục */
   var pk=prevMonth(cur),pc={},pt=0;
-  data.forEach(function(x){if(x.t=="o"&&x.d.slice(0,7)==pk){pc[x.c]=(pc[x.c]||0)+x.a;pt+=x.a}});
+  data.forEach(function(x){if(x.t==SK&&x.d.slice(0,7)==pk){pc[x.c]=(pc[x.c]||0)+x.a;pt+=x.a}});
   h+="<p class='vt'>📈 So với tháng trước</p>";
-  if(!pt)h+="<p class='leg'>Chưa có dữ liệu chi của tháng trước để so sánh.</p>";
+  if(!pt)h+="<p class='leg'>Chưa có dữ liệu "+SW().n+" của tháng trước để so sánh.</p>";
   else{
     var all=Object.keys(cat).concat(Object.keys(pc).filter(function(k){return !(k in cat)}));
     all.sort(function(a,b){return Math.max(cat[b]||0,pc[b]||0)-Math.max(cat[a]||0,pc[a]||0)});
     h+=all.slice(0,6).map(function(k){
       var c1=cat[k]||0,c0=pc[k]||0,t,cl;
-      if(!c0){t="Mới";cl="out"}else{var df=Math.round((c1-c0)/c0*100);t=df>0?"▲ "+df+"%":df<0?"▼ "+Math.abs(df)+"%":"＝";cl=df>0?"out":df<0?"in":""}
-      return "<div class='lg'><span>"+ico("o",k)+" "+esc(k)+"</span><b>"+vnd(c1)+"</b><small class='"+cl+"'>"+t+"</small></div>"}).join("");
+      if(!c0){t="Mới";cl=SK=="o"?"out":"in"}else{var df=Math.round((c1-c0)/c0*100);t=df>0?"▲ "+df+"%":df<0?"▼ "+Math.abs(df)+"%":"＝";cl=df==0?"":((df>0)==(SK=="o")?"out":"in")}
+      return "<div class='lg'><span>"+ico(SK,k)+" "+esc(k)+"</span><b>"+vnd(c1)+"</b><small class='"+cl+"'>"+t+"</small></div>"}).join("");
   }
   /* 5. Top khoản chi lớn */
   var top=ex.slice().sort(function(a,b){return b.a-a.a}).slice(0,5);
-  h+="<p class='vt'>💥 5 khoản chi lớn nhất</p>"+top.map(function(x){
-    return "<div class='item' data-ic='"+ico("o",x.c)+"'><div class='m'><b>"+catLbl(x)+(x.n?" · "+esc(x.n):"")+"</b><small>"+fshort(x.d)+"</small></div><b class='out'>"+vnd(x.a)+"</b></div>"}).join("");
+  h+="<p class='vt'>💥 5 khoản "+SW().n+" lớn nhất</p>"+top.map(function(x){
+    return "<div class='item' data-ic='"+ico(SK,x.c)+"'><div class='m'><b>"+catLbl(x)+(x.n?" · "+esc(x.n):"")+"</b><small>"+fshort(x.d)+"</small></div><b class='"+SW().c+"'>"+vnd(x.a)+"</b></div>"}).join("");
   el.innerHTML=h;
 }
 function subRows(m,total){
@@ -722,9 +735,47 @@ function applyRestore(){
   pend=null;$("rs").textContent="⬇️ Nhập File";
   save();setType(type);render();msg("Đã khôi phục dữ liệu.");
 }
+function renderDaily(cur){
+  var el=$("dcmp");if(!el)return;
+  var p=cur.split("-"),y=+p[0],m=+p[1],dim=new Date(y,m,0).getDate(),di=[],dO=[],mx=0,any=false,d;
+  for(d=1;d<=dim;d++){di[d]=0;dO[d]=0}
+  data.forEach(function(x){if(x.t=="t"||x.d.slice(0,7)!=cur)return;var dd=+x.d.slice(8);if(x.t=="i")di[dd]+=x.a;else dO[dd]+=x.a;any=true});
+  if(!any){el.innerHTML="<div class='empty'>Chưa có thu chi trong tháng này</div>";return}
+  var bi=1,bo=1;
+  for(d=1;d<=dim;d++){mx=Math.max(mx,di[d],dO[d]);if(di[d]>di[bi])bi=d;if(dO[d]>dO[bo])bo=d}
+  var bw=280/dim,g="";
+  for(d=1;d<=dim;d++){
+    var x0=10+(d-1)*bw,w=bw*.38,hi=di[d]/mx*85,ho=dO[d]/mx*85;
+    if(di[d])g+="<rect x='"+(x0+bw*.08).toFixed(1)+"' y='"+(95-hi).toFixed(1)+"' width='"+w.toFixed(1)+"' height='"+hi.toFixed(1)+"' rx='1.2' fill='var(--in)'/>";
+    if(dO[d])g+="<rect x='"+(x0+bw*.08+w).toFixed(1)+"' y='"+(95-ho).toFixed(1)+"' width='"+w.toFixed(1)+"' height='"+ho.toFixed(1)+"' rx='1.2' fill='var(--out)'/>";
+    if(d==1||d%5==0)g+="<text x='"+(x0+bw/2).toFixed(1)+"' y='109' text-anchor='middle' font-size='8' fill='var(--mut)'>"+d+"</text>";
+  }
+  el.innerHTML="<svg viewBox='0 0 300 115' style='width:100%;height:auto;display:block'><line x1='10' x2='290' y1='95' y2='95' stroke='var(--bd)'/>"+g+"</svg>"
+    +"<p class='leg'><span class='in'>■</span> Thu &nbsp; <span class='out'>■</span> Chi</p>"
+    +"<p class='leg' style='margin:2px 0 0'>Ngày thu nhiều nhất: <b>"+(di[bi]?fshort(cur+"-"+pad(bi))+" ("+vnd(di[bi])+")":"—")+"</b></p>"
+    +"<p class='leg' style='margin:2px 0 0'>Ngày chi nhiều nhất: <b>"+(dO[bo]?fshort(cur+"-"+pad(bo))+" ("+vnd(dO[bo])+")":"—")+"</b></p>";
+}
+var SK="o";
+function SW(){return SK=="i"?{n:"thu",N:"Thu",c:"in"}:{n:"chi",N:"Chi",c:"out"}}
+function renderSS(cur){
+  var pk=prevMonth(cur),a={i:0,o:0},b={i:0,o:0};
+  data.forEach(function(x){if(x.t=="t")return;var k=x.d.slice(0,7);if(k==cur)a[x.t]+=x.a;else if(k==pk)b[x.t]+=x.a});
+  function chg(v,o,good){
+    if(!o)return "<em>Tháng trước: chưa có</em>";
+    var df=Math.round((v-o)/o*100);if(!df)return "<em>＝ so với tháng trước</em>";
+    return "<em class='"+((df>0)==good?"in":"out")+"'>"+(df>0?"▲ ":"▼ ")+Math.abs(df)+"% so với tháng trước</em>";
+  }
+  var bal=a.i-a.o,pb=b.i-b.o,rate=a.i?Math.round(bal/a.i*100):null;
+  $("ss").innerHTML="<div class='ag'>"
+    +"<div class='st'><small>💰 Tổng Thu</small><b class='in'>+"+vnd(a.i)+"</b>"+chg(a.i,b.i,true)+"</div>"
+    +"<div class='st'><small>💸 Tổng Chi</small><b class='out'>−"+vnd(a.o)+"</b>"+chg(a.o,b.o,false)+"</div>"
+    +"<div class='st'><small>⚖️ Thu − Chi</small><b class='"+(bal>=0?"in":"out")+"'>"+(bal>=0?"+":"−")+vnd(Math.abs(bal))+"</b><em>"+(pb||b.i||b.o?"Tháng trước: "+(pb>=0?"+":"−")+vnd(Math.abs(pb)):"Tháng trước: chưa có")+"</em></div>"
+    +"<div class='st'><small>🐖 Tỷ Lệ Còn Lại</small><b class='"+(rate===null?"":rate>=0?"in":"out")+"'>"+(rate===null?"—":rate+"%")+"</b><em>"+(rate===null?"Chưa có khoản thu":"Phần thu còn giữ lại")+"</em></div>"
+    +"</div>";
+}
 function renderAn(cur){
-  var ex=data.filter(function(x){return x.t=="o"&&x.d.slice(0,7)==cur});
-  if(!ex.length){$("an").innerHTML="<div class='empty'>Chưa có khoản chi trong tháng này</div>";return}
+  var ex=data.filter(function(x){return x.t==SK&&x.d.slice(0,7)==cur});
+  if(!ex.length){$("an"+SK).innerHTML="<div class='empty'>"+"Chưa có khoản "+SW().n+" trong tháng này"+"</div>";return}
   var tot=0,cat={},day={},big=ex[0];
   ex.forEach(function(x){tot+=x.a;cat[x.c]=(cat[x.c]||0)+x.a;day[x.d]=(day[x.d]||0)+x.a;if(x.a>big.a)big=x});
   function top(o){return Object.keys(o).sort(function(a,b){return o[b]-o[a]})[0]}
@@ -732,14 +783,14 @@ function renderAn(cur){
   var dim=new Date(y,m,0).getDate(),nw=today();
   if(cur==nw.slice(0,7))dim=+nw.slice(8);
   var pk=m==1?(y-1)+"-12":y+"-"+pad(m-1),pt=0;
-  data.forEach(function(x){if(x.t=="o"&&x.d.slice(0,7)==pk)pt+=x.a});
+  data.forEach(function(x){if(x.t==SK&&x.d.slice(0,7)==pk)pt+=x.a});
   var cmp="<em>Chưa có dữ liệu Tháng "+(m==1?12:m-1)+" để so sánh</em>";
   if(pt>0){var df=Math.round((tot-pt)/pt*100);
-    cmp="<b class='"+(df>0?"out":"in")+"'>"+(df>0?"Tăng ":"Giảm ")+Math.abs(df)+"%</b><em>Tháng trước chi "+vnd(pt)+"</em>"}
-  $("an").innerHTML="<div class='ag'>"
-    +"<div class='st w'><small>🏆 Danh Mục Chi Nhiều Nhất</small><b>"+esc(tc)+" · "+vnd(cat[tc])+"</b><em>Chiếm "+Math.round(cat[tc]/tot*100)+"% tổng chi ("+vnd(tot)+")</em></div>"
-    +"<div class='st w'><small>💥 Khoản Chi Lớn Nhất</small><b>"+vnd(big.a)+"</b><em>"+catLbl(big)+(big.n?" · "+esc(big.n):"")+" · "+fshort(big.d)+"</em></div>"
-    +"<div class='st'><small>📆 Ngày Chi Nhiều Nhất</small><b>"+vnd(day[td])+"</b><em>"+fshort(td)+"</em></div>"
+    cmp="<b class='"+((df>0)==(SK=="o")?"out":"in")+"'>"+(df>0?"Tăng ":"Giảm ")+Math.abs(df)+"%</b><em>Tháng trước "+SW().n+" "+vnd(pt)+"</em>"}
+  $("an"+SK).innerHTML="<div class='ag'>"
+    +"<div class='st w'><small>🏆 "+(SK=="i"?"Nguồn Thu Nhiều Nhất":"Danh Mục Chi Nhiều Nhất")+"</small><b>"+esc(tc)+" · "+vnd(cat[tc])+"</b><em>Chiếm "+Math.round(cat[tc]/tot*100)+"% tổng "+SW().n+" ("+vnd(tot)+")</em></div>"
+    +"<div class='st w'><small>💥 Khoản "+SW().N+" Lớn Nhất</small><b>"+vnd(big.a)+"</b><em>"+catLbl(big)+(big.n?" · "+esc(big.n):"")+" · "+fshort(big.d)+"</em></div>"
+    +"<div class='st'><small>📆 Ngày "+SW().N+" Nhiều Nhất</small><b>"+vnd(day[td])+"</b><em>"+fshort(td)+"</em></div>"
     +"<div class='st'><small>📊 Trung Bình Mỗi Ngày</small><b>"+vnd(Math.round(tot/dim))+"</b><em>"+dim+" ngày"+(cur==nw.slice(0,7)?" đến nay":"")+"</em></div>"
     +"<div class='st w'><small>📈 So Với Tháng Trước</small>"+cmp+"</div>"
     +"</div>";
@@ -1225,7 +1276,7 @@ function initPick(id,k,optional){
   };
 }
 initPick("dd0","dd0",false);initPick("ddue","due",true);
-var TAB_MAP={home:[".sum","#wl","#bl","#bch"],tx:["#amt","#list","#rl"],stat:["#an","#viz","#ch1","#ch2"],debt:["#dlist","#gl"],more:["#pnm","#bk"]};
+var TAB_MAP={home:[".sum","#wl","#bl","#bch"],tx:["#amt","#list","#rl"],stat:["#sk","#dc","#ani","#vizi","#ch1","#ch2i"],debt:["#dlist","#gl"],more:["#pnm","#bk"]};
 function initTabs(){
   Object.keys(TAB_MAP).forEach(function(t){
     TAB_MAP[t].forEach(function(s){

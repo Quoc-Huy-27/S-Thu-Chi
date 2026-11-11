@@ -222,6 +222,7 @@ button.av.on{border-color:var(--pri);background:rgba(212,160,23,.15)}
 #rl .item,#wl .item[data-wv]{cursor:pointer}
 .chips{display:flex;gap:6px;overflow-x:auto;margin:-2px 0 8px;padding-bottom:2px;-webkit-overflow-scrolling:touch}
 .chips button{width:auto;flex:none;margin:0;padding:6px 12px;border-radius:999px;font-size:13px;white-space:nowrap;background:var(--card);color:var(--tx)}
+.card:not(.ed) #wnew{display:none}
 .sheet .item.f{opacity:.75}
 .sheet .item .m b{white-space:normal;overflow:visible}
 .sheet .acts{display:flex;gap:8px;margin:4px 0 8px}.sheet .acts button{flex:1}
@@ -243,7 +244,7 @@ button.av.on{border-color:var(--pri);background:rgba(212,160,23,.15)}
   </div>
   <div class="sbar" id="sbar"><i id="sfill"></i></div><div class="bfc" id="snote" style="margin-top:6px"></div>
 </div>
-<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><p class="h2">Các ví</p><button class="lnk" id="wedit" type="button">✏️ Sửa</button></div><div id="wl"></div><div class="row" style="margin-top:10px"><button id="wicb" class="cic" type="button" style="flex:none;width:54px;margin-bottom:8px" title="Chọn icon">👛</button><input id="wn" type="text" placeholder="Tên ví mới"><input id="wi" type="text" inputmode="numeric" placeholder="Số dư ban đầu"></div><div class="ipk" id="wpkn" style="display:none"></div><button class="add" id="wadd" type="button">Thêm ví</button></div>
+<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><p class="h2">Các ví</p><button class="lnk" id="wedit" type="button">✏️ Sửa</button></div><div id="wl"></div><div id="wnew"><div class="row" style="margin-top:10px"><button id="wicb" class="cic" type="button" style="flex:none;width:54px;margin-bottom:8px" title="Chọn icon">👛</button><input id="wn" type="text" placeholder="Tên ví mới"><input id="wi" type="text" inputmode="numeric" placeholder="Số dư ban đầu"></div><div class="ipk" id="wpkn" style="display:none"></div><button class="add" id="wadd" type="button">Thêm ví</button></div></div>
 <div class="card">
   <div class="seg">
     <button class="on o" id="bo" type="button">💸 Chi</button>
@@ -354,7 +355,7 @@ function vnd(n){return n.toLocaleString("vi-VN")+" ₫"}
 function $(id){return document.getElementById(id)}
 function today(){var d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
 function setType(t){type=t;$("bt").className=t=="t"?"on t":"";$("cat").style.display=t=="t"?"none":"";$("cedit").style.display=t=="t"?"none":"";$("rptrow").style.display=t=="t"?"none":"";$("rptd").style.display=t=="t"?"none":"";$("wal2").style.display=t=="t"?"":"none";$("bo").className=t=="o"?"on o":"";$("bi").className=t=="i"?"on i":"";
-$("cat").innerHTML=(CATS[t]||[]).map(function(c){return "<option value=\""+esc(c)+"\">"+ico(t,c)+" "+esc(c)+"</option>"}).join("");fillSub()}
+$("cat").innerHTML=(CATS[t]||[]).map(function(c){return "<option value=\""+esc(c)+"\">"+ico(t,c)+" "+esc(c)+"</option>"}).join("");fillSub();renderSug()}
 var DICO={"o|Ăn uống":"🍜","o|Đi lại":"🚗","o|Nhà cửa":"🏠","o|Mua sắm":"🛍️","o|Giải trí":"🎮","o|Sức khỏe":"💊","o|Học tập":"📚","o|Khác":"📦","i|Lương":"💵","i|Thưởng":"🎁","i|Kinh doanh":"💼","i|Được cho":"🤝","i|Khác":"✨"};
 var ICSET="🍜 🍚 🍔 🍕 🍣 🥗 🍳 🥐 🍰 🍦 ☕ 🍺 🛒 🥤 🚗 🏍️ 🚌 🚇 ✈️ ⛽ 🚲 🚕 🅿️ 🏠 💡 💧 📶 🛋️ 🔧 🧹 🛏️ 🛍️ 👕 👟 💄 🎁 📱 💻 🎮 🎬 🎵 🎤 ⚽ 🏖️ 🎡 📺 💊 🏥 🦷 💪 🧘 📚 🎓 ✏️ 🏫 👶 🐶 🐱 👪 💵 💰 💳 🏦 📈 💼 🤝 🧾 📦 🎂 💍 🙏 ❤️ 🌟 🚬 ✨ 🏷️".split(" ");
 function ico(t,c){if(t=="t")return "🔁";var m=CATS.ic||{};return m[t+"|"+c]||DICO[t+"|"+c]||(t=="i"?"💰":"💸")}
@@ -766,7 +767,7 @@ function passF(x,cur){
 $("fq").oninput=render;$("fw").onchange=render;$("fc").onchange=render;$("fs").onchange=render;
 var DEFSUG={"o|Ăn uống":["Ăn sáng","Cơm trưa","Ăn tối","Cà phê","Trà sữa","Đi chợ"],"o|Đi lại":["Xăng xe","Grab","Gửi xe","Vé xe buýt"],"o|Nhà cửa":["Tiền nhà","Tiền điện","Tiền nước","Internet","Sửa chữa"],"o|Mua sắm":["Quần áo","Giày dép","Đồ gia dụng","Mỹ phẩm"],"o|Giải trí":["Xem phim","Cà phê bạn bè","Game","Du lịch"],"o|Sức khỏe":["Khám bệnh","Thuốc","Phòng gym"],"o|Học tập":["Học phí","Sách vở","Khóa học"],"i|Lương":["Lương tháng"],"i|Thưởng":["Thưởng Tết","Thưởng dự án"],"i|Kinh doanh":["Bán hàng"],"i|Được cho":["Được tặng","Tiền lì xì"]};
 var SUG=[];
-function sugNames(){var o={};data.forEach(function(x){if(x.n&&x.t!="t")o[x.n]=(o[x.n]||0)+1});Object.keys(DEFSUG).forEach(function(k){DEFSUG[k].forEach(function(n){o[n]=o[n]||0})});return Object.keys(o).sort(function(a,b){return o[b]-o[a]}).slice(0,40)}
+function sugNames(t){var o={};data.forEach(function(x){if(x.n&&x.t==t)o[x.n]=(o[x.n]||0)+1});Object.keys(DEFSUG).forEach(function(k){if(k.charAt(0)==t)DEFSUG[k].forEach(function(n){o[n]=o[n]||0})});return Object.keys(o).sort(function(a,b){return o[b]-o[a]}).slice(0,40)}
 function sugList(){
   if(type=="t")return [];
   var c=$("cat").value,q=$("note").value.trim().toLowerCase(),map={};
@@ -881,7 +882,7 @@ function openRec(id,m){
   h+="<select id='rxw'>"+wallets.map(function(w){return "<option value='"+w.id+"'>"+wic(w)+" "+esc(w.n)+"</option>"}).join("")+"</select>";
   h+="<input id='rxa' type='text' inputmode='numeric' placeholder='Số tiền (₫)' value='"+r.a.toLocaleString("vi-VN")+"'>";
   h+="<select id='rxc'></select><select id='rxs' style='display:none'></select>";
-  h+="<input id='rxn' type='text' list='rxl' autocomplete='off' placeholder='Tên khoản / ghi chú (không bắt buộc)' value=\""+esc(r.n||"")+"\"><datalist id='rxl'>"+sugNames().map(function(n){return "<option value=\""+esc(n)+"\">"}).join("")+"</datalist>";
+  h+="<input id='rxn' type='text' list='rxl' autocomplete='off' placeholder='Tên khoản / ghi chú (không bắt buộc)' value=\""+esc(r.n||"")+"\"><datalist id='rxl'>"+sugNames(recT).map(function(n){return "<option value=\""+esc(n)+"\">"}).join("")+"</datalist>";
   h+="<select id='rxd'>";for(var d=1;d<=31;d++)h+="<option value='"+d+"'>Ngày "+d+" hàng tháng</option>";h+="</select>";
   h+="<p class='leg' style='margin:0 0 8px'>Tháng không có ngày này sẽ ghi vào ngày cuối tháng. Thay đổi chỉ áp dụng cho các lần ghi từ nay; giao dịch đã ghi giữ nguyên.</p>";
   h+="<div class='acts'><button class='add' type='button' data-ra='save'>💾 Lưu Thay Đổi</button><button class='add alt' type='button' data-ra='del' style='color:var(--out)'>🗑️ Xóa</button></div>";
@@ -907,12 +908,13 @@ function recDel(id){
   REC=rmId(REC,id);saveX();render();
   if(sheetFrom)sheetFrom();else $("ov").classList.remove("show");
 }
+function fillRecList(){$("rxl").innerHTML=sugNames(recT).map(function(n){return "<option value=\""+esc(n)+"\">"}).join("")}
 function recAct(a){
   var id=$("sheet").getAttribute("data-rid");
   if(a=="back"){if(sheetFrom)sheetFrom();else $("ov").classList.remove("show")}
   else if(a=="save")recSave(id);
   else if(a=="del")recDel(id);
-  else if(a=="ty-o"||a=="ty-i"){recT=a.slice(3);$("rxto").className=recT=="o"?"on o":"";$("rxti").className=recT=="i"?"on i":"";fillRecCat("","")}
+  else if(a=="ty-o"||a=="ty-i"){recT=a.slice(3);$("rxto").className=recT=="o"?"on o":"";$("rxti").className=recT=="i"?"on i":"";fillRecCat("","");fillRecList()}
 }
 function openRecAll(){
   sheetFrom=null;

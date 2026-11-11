@@ -3,7 +3,7 @@
 Ứng dụng quản lý thu chi cá nhân dạng PWA, chạy offline và cài được lên iPhone.
 
 ## Tính năng
-- Quản lý nhiều ví, ghi thu, chi và chuyển ví
+- Quản lý nhiều ví (bấm Sửa ở mục Các ví để thêm ví mới), ghi thu, chi và chuyển ví
 - Số dư đầu tháng tự động chuyển từ tháng trước
 - Xem số dư dự kiến 3 tháng tới, chỉ tính từ dữ liệu đã nhập: giao dịch sắp tới, giao dịch định kỳ và nợ (không tự ước tính)
 - Đổi icon cho từng danh mục thu chi và từng ví (bộ icon có sẵn hoặc tự nhập)
@@ -12,7 +12,7 @@
 - Danh sách giao dịch nhóm theo ngày, hiển thị tổng chi của từng ngày
 - Giao dịch định kỳ: chạm để xem lịch từng ngày, sửa số tiền, ví, danh mục, ngày ghi hoặc xóa
 - Chạm vào Số Dư, dòng “Dự kiến hết tháng” hoặc từng ví để xem biến động số dư theo từng ngày
-- Gợi ý tên khoản dưới ô ghi chú (theo danh mục, tần suất dùng và chữ đang gõ); chạm để điền nhanh tên, danh mục và số tiền lần trước
+- Gợi ý tên khoản dưới ô ghi chú (tách riêng thu và chi, theo danh mục, tần suất dùng và chữ đang gõ); chạm để điền nhanh tên, danh mục và số tiền lần trước
 - Ngân sách, theo dõi nợ
 - Mục tiêu tiết kiệm: chọn ví để góp (trừ tiền khỏi ví) hoặc rút (cộng lại vào ví), có lịch sử từng lần góp
 - Biểu đồ thu chi và diễn biến số dư
@@ -50,4 +50,4 @@ npx cap open ios
 - Sao lưu định kỳ tại **Sao Lưu** > **Xuất File**; khôi phục bằng **Nhập File**.
 
 ## Cập nhật
-Khi thay đổi `index.html`, tăng tên cache trong `sw.js` (hiện là `sothuchi-v13`) để thiết bị tải bản mới.
+Khi thay đổi `index.html`, tăng tên cache trong `sw.js` (hiện là `sothuchi-v14`) để thiết bị tải bản mới.
